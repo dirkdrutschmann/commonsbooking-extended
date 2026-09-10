@@ -3,7 +3,7 @@
 Plugin Name: CommonsBooking Extended
 Description: Dieses Plugin erweitert Common Bookings um zusätzliche Verwaltungsfunktionen, Buchungshistorie und Sidebar-Funktionen.
 Author: Dirk Drutschmann
-Version: 0.7.12
+Version: 1.0.0
 */
 
 namespace DirkDrutschmann\CommonbookingsAdditionalFeatures;
