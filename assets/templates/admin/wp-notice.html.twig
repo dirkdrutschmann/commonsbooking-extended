@@ -1,0 +1,11 @@
+<div class="notice notice-{{ type|e('html_attr') }} is-dismissible">
+    <p>
+        {% if title %}
+            <strong>{{ title|e }}</strong>
+        {% endif %}
+        {{ message|e }}
+        {% if link_url %}
+            <a href="{{ link_url|e('html_attr') }}">{{ link_label|e }}</a>
+        {% endif %}
+    </p>
+</div>

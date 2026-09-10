@@ -1,0 +1,46 @@
+<div class="afcb-user-form afcb-tailwind">
+    <div class="max-w-xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-sm p-6 md:p-8">
+        {% if notice %}
+            {% include 'components/notice.html.twig' with {
+                type: notice_type|default('info'),
+                message: notice
+            } only %}
+        {% endif %}
+
+        <form method="post" action="{{ action_url|e('html_attr') }}" class="afcb-form mt-6 space-y-4">
+            <input type="hidden" name="action" value="afcb_forgot_username">
+            {{ nonce_field|raw }}
+
+            {% set phone_control %}
+                {% include 'components/input.html.twig' with {
+                    type: 'tel',
+                    name: 'phone',
+                    class: 'afcb-phone-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+                    attrs: 'autocomplete="tel" placeholder="z. B. +49 176 12345678" required'
+                } only %}
+            {% endset %}
+            {% include 'components/field.html.twig' with {
+                label: 'Telefonnummer',
+                control: phone_control
+            } only %}
+
+            {% if recaptcha_site_key and recaptcha_version == 'v2' %}
+                <div class="afcb-recaptcha">
+                    <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key|e('html_attr') }}"></div>
+                </div>
+            {% endif %}
+
+            {% include 'components/button.html.twig' with {
+                type: 'submit',
+                label: 'SMS senden',
+                class: 'w-full rounded-lg bg-slate-800 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-900'
+            } only %}
+        </form>
+
+        {% if login_url %}
+            <div class="mt-6 text-sm">
+                <a class="text-teal-600 hover:text-teal-700" href="{{ login_url|e('html_attr') }}">Zur Anmeldung</a>
+            </div>
+        {% endif %}
+    </div>
+</div>

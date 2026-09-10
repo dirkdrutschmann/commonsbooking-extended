@@ -1,0 +1,29 @@
+{% set wrapper_class = wrapper_class|default('grid gap-2 md:grid-cols-3 md:gap-4 items-start') %}
+{% set label_class = label_class|default('text-sm font-medium text-slate-700') %}
+{% set control_class = control_class|default('space-y-2') %}
+{% set has_label = (label_html is defined and label_html) or (label is defined and label) %}
+
+<div class="{{ wrapper_class|e('html_attr') }}">
+    {% if has_label %}
+        <label{% if id is defined %} for="{{ id|e('html_attr') }}"{% endif %} class="{{ label_class|e('html_attr') }}">
+            {% if label_html is defined and label_html %}
+                {{ label_html|raw }}
+            {% else %}
+                {{ label|e }}
+            {% endif %}
+        </label>
+        <div class="{{ control_class|e('html_attr') }} md:col-span-2">
+            {{ control|raw }}
+            {% if help %}
+                <p class="text-xs text-slate-500">{{ help|e }}</p>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="{{ control_class|e('html_attr') }} md:col-span-3">
+            {{ control|raw }}
+            {% if help %}
+                <p class="text-xs text-slate-500">{{ help|e }}</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>

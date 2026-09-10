@@ -1,0 +1,22 @@
+{% set type = type|default('info') %}
+{% set styles = {
+    info: 'border-slate-200 bg-slate-50 text-slate-700',
+    success: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+    warning: 'border-amber-200 bg-amber-50 text-amber-700',
+    error: 'border-rose-200 bg-rose-50 text-rose-700'
+} %}
+{% set class = class|default(styles[type] ?? styles.info) %}
+{% set is_error = type == 'error' %}
+<div
+    {% if id is defined %}id="{{ id|e('html_attr') }}"{% endif %}
+    class="afcb-notice afcb-notice-{{ type|e('html_attr') }} rounded-lg border px-4 py-3 text-sm {{ class|e('html_attr') }}"
+    role="{{ is_error ? 'alert' : 'status' }}"
+    aria-live="{{ is_error ? 'assertive' : 'polite' }}"
+    aria-atomic="true"
+>
+    {% if strong %}
+        <strong>{{ message|e }}</strong>
+    {% else %}
+        {{ message|e }}
+    {% endif %}
+</div>

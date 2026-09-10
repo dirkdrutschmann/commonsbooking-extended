@@ -1,0 +1,319 @@
+{% set required = required_fields ?? [] %}
+{% set form = form_data|default({}) %}
+<div class="afcb-user-form afcb-tailwind">
+    <div class="max-w-3xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-sm p-6 md:p-8">
+        {% if notice %}
+            {% include 'components/notice.html.twig' with {
+                type: notice_type|default('info'),
+                message: notice
+            } only %}
+        {% endif %}
+
+        <form method="post" action="{{ action_url|e('html_attr') }}" class="afcb-form space-y-6">
+            <input type="hidden" name="action" value="afcb_register">
+            {{ nonce_field|raw }}
+
+            <div class="space-y-4">
+                <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Zugangsdaten</h3>
+                <div class="space-y-4">
+                    {% set username_control %}
+                        {% include 'components/input.html.twig' with {
+                            type: 'text',
+	                            id: 'user_login',
+	                            name: 'user_login',
+	                            value: form.user_login|default(''),
+	                            class: 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+	                            attrs: 'autocomplete="username" data-afcb-check-field="user_login" required'
+	                        } only %}
+                    {% endset %}
+                    {% include 'components/field.html.twig' with {
+                        label: 'Benutzername *',
+                        id: 'user_login',
+                        control: username_control
+                    } only %}
+
+                    {% set email_control %}
+                        {% include 'components/input.html.twig' with {
+                            type: 'email',
+	                            id: 'user_email',
+	                            name: 'user_email',
+	                            value: form.user_email|default(''),
+	                            class: 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+	                            attrs: 'autocomplete="email" data-afcb-check-field="user_email" required'
+	                        } only %}
+                    {% endset %}
+                    {% include 'components/field.html.twig' with {
+                        label: 'E-Mail *',
+                        id: 'user_email',
+                        control: email_control
+                    } only %}
+
+                    {% set password_control %}
+                        {% include 'components/input.html.twig' with {
+                            type: 'password',
+                            id: 'afcb-password',
+                            name: 'user_pass',
+                            class: 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+                            attrs: 'minlength="8" required'
+                        } only %}
+                        <div class="text-xs text-slate-500">
+                            Mindestens 8 Zeichen, Groß‑/Kleinbuchstaben, Zahl und Sonderzeichen.
+                        </div>
+                        <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                            <div id="afcb-password-meter" class="h-2 w-0 bg-red-400 transition-all"></div>
+                        </div>
+                        <div id="afcb-password-text" class="text-xs text-slate-500"></div>
+                    {% endset %}
+                    {% include 'components/field.html.twig' with {
+                        label: 'Passwort *',
+                        id: 'afcb-password',
+                        control: password_control
+                    } only %}
+
+                    {% set password_confirm_control %}
+                        {% include 'components/input.html.twig' with {
+                            type: 'password',
+                            id: 'afcb-password-confirm',
+                            name: 'user_pass_confirm',
+                            class: 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+                            attrs: 'minlength="8" required'
+                        } only %}
+                    {% endset %}
+                    {% include 'components/field.html.twig' with {
+                        label: 'Passwort bestätigen *',
+                        id: 'afcb-password-confirm',
+                        control: password_confirm_control
+                    } only %}
+                </div>
+            </div>
+
+            <div class="border-t border-slate-200 pt-6 space-y-4">
+                <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Persönliche Daten</h3>
+                <div class="space-y-4">
+                    {% set first_name_required = 'first_name' in required %}
+                    {% set first_name_control %}
+                        {% include 'components/input.html.twig' with {
+                            type: 'text',
+	                            id: 'first_name',
+	                            name: 'first_name',
+	                            value: form.first_name|default(''),
+	                            class: 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+	                            attrs: first_name_required ? 'required' : ''
+                        } only %}
+                    {% endset %}
+                    {% include 'components/field.html.twig' with {
+                        label: 'Vorname' ~ (first_name_required ? ' *' : ''),
+                        id: 'first_name',
+                        control: first_name_control
+                    } only %}
+
+                    {% set last_name_required = 'last_name' in required %}
+                    {% set last_name_control %}
+                        {% include 'components/input.html.twig' with {
+                            type: 'text',
+	                            id: 'last_name',
+	                            name: 'last_name',
+	                            value: form.last_name|default(''),
+	                            class: 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+	                            attrs: last_name_required ? 'required' : ''
+                        } only %}
+                    {% endset %}
+                    {% include 'components/field.html.twig' with {
+                        label: 'Nachname' ~ (last_name_required ? ' *' : ''),
+                        id: 'last_name',
+                        control: last_name_control
+                    } only %}
+
+                    {% set phone_required = 'afcb_phone' in required %}
+                    {% set phone_control %}
+                        {% include 'components/input.html.twig' with {
+                            type: 'tel',
+	                            id: 'phone',
+	                            name: 'phone',
+	                            value: form.phone|default(''),
+	                            class: 'afcb-phone-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+	                            attrs: 'autocomplete="tel" placeholder="z. B. +49 176 12345678"' ~ (phone_required ? ' required' : '')
+                        } only %}
+                    {% endset %}
+                    {% include 'components/field.html.twig' with {
+                        label: 'Telefon' ~ (phone_required ? ' *' : ''),
+                        id: 'phone',
+                        control: phone_control
+                    } only %}
+                    <div class="afcb-address space-y-2">
+                        {% set street_required = 'afcb_street' in required %}
+                        {% set house_number_required = 'afcb_house_number' in required %}
+                        {% set zip_required = 'afcb_zip' in required %}
+                        {% set city_required = 'afcb_city' in required %}
+                        {% set address_control %}
+                            {% include 'components/input.html.twig' with {
+                                type: 'text',
+	                                id: 'address_search',
+	                                name: 'address_search',
+	                                value: form.address_search|default(''),
+	                                class: 'afcb-address-search w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+	                                attrs: 'placeholder="Straße Hausnummer, PLZ Ort" autocomplete="street-address"'
+                            } only %}
+                        {% endset %}
+                        {% include 'components/field.html.twig' with {
+                            label: 'Adresse suchen',
+                            id: 'address_search',
+                            control: address_control
+                        } only %}
+                        <div class="afcb-address-results rounded-lg border border-slate-200 bg-white shadow-sm"></div>
+                        <p class="text-xs text-slate-500">Wähle einen Suchtreffer aus oder trage die Adresse vollständig ein.</p>
+
+                        <div class="grid gap-3 md:grid-cols-6">
+                            <div class="md:col-span-4 space-y-1">
+                                <label for="street" class="block text-sm font-medium text-slate-700">Straße{{ street_required ? ' *' : '' }}</label>
+                                {% include 'components/input.html.twig' with {
+                                    type: 'text',
+	                                    id: 'street',
+	                                    name: 'street',
+	                                    value: form.street|default(''),
+	                                    class: 'afcb-address-detail w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+	                                    attrs: 'autocomplete="address-line1"' ~ (street_required ? ' required' : '')
+                                } only %}
+                            </div>
+                            <div class="md:col-span-2 space-y-1">
+                                <label for="house_number" class="block text-sm font-medium text-slate-700">Hausnummer{{ house_number_required ? ' *' : '' }}</label>
+                                {% include 'components/input.html.twig' with {
+                                    type: 'text',
+	                                    id: 'house_number',
+	                                    name: 'house_number',
+	                                    value: form.house_number|default(''),
+	                                    class: 'afcb-address-detail w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+	                                    attrs: house_number_required ? 'required' : ''
+                                } only %}
+                            </div>
+                            <div class="md:col-span-2 space-y-1">
+                                <label for="zip" class="block text-sm font-medium text-slate-700">PLZ{{ zip_required ? ' *' : '' }}</label>
+                                {% include 'components/input.html.twig' with {
+                                    type: 'text',
+	                                    id: 'zip',
+	                                    name: 'zip',
+	                                    value: form.zip|default(''),
+	                                    class: 'afcb-address-detail w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+	                                    attrs: 'autocomplete="postal-code"' ~ (zip_required ? ' required' : '')
+                                } only %}
+                            </div>
+                            <div class="md:col-span-4 space-y-1">
+                                <label for="city" class="block text-sm font-medium text-slate-700">Ort{{ city_required ? ' *' : '' }}</label>
+                                {% include 'components/input.html.twig' with {
+                                    type: 'text',
+	                                    id: 'city',
+	                                    name: 'city',
+	                                    value: form.city|default(''),
+	                                    class: 'afcb-address-detail w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+	                                    attrs: 'autocomplete="address-level2"' ~ (city_required ? ' required' : '')
+                                } only %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if custom_fields is not empty %}
+                <div class="border-t border-slate-200 pt-6">
+                    <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Weitere Angaben</h3>
+                    <div class="mt-4 space-y-4">
+                        {% for field in custom_fields %}
+	                            {% set field_id = 'custom_' ~ field.key %}
+	                            {% set label_text = field.label ~ (field.required ? ' *' : '') %}
+	                            {% set field_required_attr = field.required ? 'required' : '' %}
+	                            {% set field_value = attribute(form.custom_fields|default({}), field.key)|default('') %}
+
+                            {% if field.type == 'textarea' %}
+                                {% set custom_control %}
+	                                    {% include 'components/textarea.html.twig' with {
+	                                        id: field_id,
+	                                        name: 'custom_fields[' ~ field.key ~ ']',
+	                                        value: field_value,
+	                                        class: 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+	                                        attrs: field_required_attr
+                                    } only %}
+                                {% endset %}
+                            {% elseif field.type == 'select' %}
+	                                {% set options = [] %}
+	                                {% for option in field.options %}
+	                                    {% set options = options|merge([{ value: option, label: option, selected: option == field_value }]) %}
+	                                {% endfor %}
+                                {% set custom_control %}
+                                    {% include 'components/select.html.twig' with {
+                                        id: field_id,
+                                        name: 'custom_fields[' ~ field.key ~ ']',
+                                        class: 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+                                        placeholder: 'Bitte wählen',
+                                        options: options,
+                                        attrs: field_required_attr
+                                    } only %}
+                                {% endset %}
+                            {% else %}
+                                {% set input_type = field.type == 'date' ? 'date' : (field.type == 'number' ? 'number' : 'text') %}
+                                {% set custom_control %}
+	                                    {% include 'components/input.html.twig' with {
+	                                        type: input_type,
+	                                        id: field_id,
+	                                        name: 'custom_fields[' ~ field.key ~ ']',
+	                                        value: field_value,
+	                                        class: 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm',
+	                                        attrs: field_required_attr
+                                    } only %}
+                                {% endset %}
+                            {% endif %}
+
+                            {% include 'components/field.html.twig' with {
+                                label: label_text,
+                                id: field_id,
+                                control: custom_control
+                            } only %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+	            <input type="hidden" name="state" value="{{ form.state|default('')|e('html_attr') }}">
+	            <input type="hidden" name="country" value="{{ form.country|default('')|e('html_attr') }}">
+	            <input type="hidden" name="address_lat" class="afcb-address-lat" value="{{ form.address_lat|default('')|e('html_attr') }}">
+	            <input type="hidden" name="address_lon" class="afcb-address-lon" value="{{ form.address_lon|default('')|e('html_attr') }}">
+	            <input type="hidden" name="address_raw" class="afcb-address-raw" value="{{ form.address_raw|default('')|e('html_attr') }}">
+
+            <div class="space-y-3">
+                <label class="afcb-checkbox flex items-start gap-2 text-sm text-slate-700">
+	                    {% include 'components/checkbox.html.twig' with {
+	                        name: 'privacy_accept',
+	                        checked: form.privacy_accept|default(false),
+	                        attrs: 'required'
+	                    } only %}
+                    <span>Ich akzeptiere die <a class="text-teal-600 hover:text-teal-700" href="{{ privacy_url|e('html_attr') }}" target="_blank" rel="noopener">Datenschutzbestimmungen</a>.</span>
+                </label>
+                <label class="afcb-checkbox flex items-start gap-2 text-sm text-slate-700">
+	                    {% include 'components/checkbox.html.twig' with {
+	                        name: 'terms_accept',
+	                        checked: form.terms_accept|default(false),
+	                        attrs: 'required'
+	                    } only %}
+                    <span>Ich akzeptiere die <a class="text-teal-600 hover:text-teal-700" href="{{ terms_url|e('html_attr') }}" target="_blank" rel="noopener">Nutzungsbedingungen</a>.</span>
+                </label>
+            </div>
+
+            {% if recaptcha_site_key and recaptcha_version == 'v2' %}
+                <div class="afcb-recaptcha">
+                    <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key|e('html_attr') }}"></div>
+                </div>
+            {% endif %}
+
+            {% include 'components/button.html.twig' with {
+                type: 'submit',
+                label: 'Registrieren',
+                class: 'w-full rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700'
+            } only %}
+        </form>
+
+        {% if login_url %}
+            <div class="mt-6 text-sm">
+                <a class="text-teal-600 hover:text-teal-700" href="{{ login_url|e('html_attr') }}">Schon registriert? Zur Anmeldung</a>
+            </div>
+        {% endif %}
+    </div>
+</div>

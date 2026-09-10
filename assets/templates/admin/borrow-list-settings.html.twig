@@ -1,0 +1,130 @@
+<div class="wrap afcb-admin-tailwind">
+    <div class="max-w-4xl">
+        <h1 class="text-2xl font-semibold text-slate-800">{{ title }}</h1>
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <form method="post" action="{{ action_url|e('html_attr') }}">
+                {{ settings_fields|raw }}
+                <h2 class="text-lg font-semibold text-slate-800">{{ subtitle }}</h2>
+                <p class="mt-3 text-sm text-slate-600">
+                    Diese Einstellungen steuern die Reihenfolge der Standortliste auf der Ausleihen-Seite.
+                    Die manuelle Reihenfolge verwendet die WordPress-Menüreihenfolge der CommonsBooking-Standorte.
+                </p>
+
+                <div class="mt-6 space-y-6">
+                    <label class="block">
+                        <span class="block text-sm font-medium text-slate-700">Standorte sortieren</span>
+                        <select data-borrow-sort-mode name="{{ option_key }}[sort_mode]" class="mt-2 w-full max-w-md rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+                            {% for mode in sort_modes %}
+                                <option value="{{ mode.value|e('html_attr') }}" {% if mode.selected %}selected{% endif %}>{{ mode.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+
+                    <div data-manual-order-panel class="{% if selected_sort_mode != 'manual' %}hidden {% endif %}max-w-3xl rounded-lg border border-slate-200 bg-white p-4">
+                        <div class="flex items-start justify-between gap-4">
+                            <div>
+                                <h3 class="text-sm font-semibold text-slate-800">Manuelle Standort-Reihenfolge</h3>
+                                <p class="mt-1 text-sm text-slate-600">Ziehe Standorte an die gewünschte Position oder nutze die Pfeile.</p>
+                            </div>
+                            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">{{ locations|length }} Standorte</span>
+                        </div>
+
+                        {% if locations is empty %}
+                            <p class="mt-4 rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-600">Keine CommonsBooking-Standorte gefunden.</p>
+                        {% else %}
+                            <ul data-location-order-list class="mt-4 space-y-2">
+                                {% for location in locations %}
+                                    <li data-location-order-row class="flex items-center gap-3 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                                        <input data-location-order-input type="hidden" name="{{ option_key }}[location_order][]" value="{{ location.id }}">
+                                        <button type="button" data-drag-handle class="cursor-move rounded border border-slate-300 bg-white px-2 py-1 text-slate-500 hover:bg-slate-100" aria-label="Standort ziehen">↕</button>
+                                        <span class="min-w-8 text-xs font-semibold text-slate-500" data-order-index>{{ loop.index }}</span>
+                                        <span class="flex-1">
+                                            <strong class="block text-slate-800">{{ location.title }}</strong>
+                                            <span class="text-xs text-slate-500">{{ location.status }}</span>
+                                            {% if location.items is empty %}
+                                                <span class="mt-1 block text-xs text-slate-500">Keine zugeordneten Artikel</span>
+                                            {% else %}
+                                                <span class="mt-1 block text-xs text-slate-600">
+                                                    {% for item in location.items %}
+                                                        <span class="block">{{ item.title }}</span>
+                                                    {% endfor %}
+                                                </span>
+                                            {% endif %}
+                                        </span>
+                                        {% if location.edit_url %}
+                                            <a href="{{ location.edit_url|e('html_attr') }}" class="text-xs font-medium text-teal-700 hover:text-teal-900">Bearbeiten</a>
+                                        {% endif %}
+                                        <button type="button" data-order-up class="rounded border border-slate-300 bg-white px-2 py-1 text-slate-600 hover:bg-slate-100" aria-label="Nach oben">↑</button>
+                                        <button type="button" data-order-down class="rounded border border-slate-300 bg-white px-2 py-1 text-slate-600 hover:bg-slate-100" aria-label="Nach unten">↓</button>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    <label class="flex max-w-2xl items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                        <input type="checkbox" name="{{ option_key }}[group_districts]" value="1" class="mt-1 h-4 w-4 rounded border-slate-300 text-teal-600" {% if group_districts %}checked{% endif %}>
+                        <span>
+                            <strong class="block text-slate-800">Stadtseiten nach Bezirken gruppieren</strong>
+                            <span class="mt-1 block text-slate-600">Zeigt auf den Stadtseiten zusätzliche Bezirks-Buttons und gruppiert die Liste nach Bezirk.</span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="mt-6">
+                    <button type="submit" class="rounded-md bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    jQuery(function ($) {
+        const $sortMode = $('[data-borrow-sort-mode]');
+        const $panel = $('[data-manual-order-panel]');
+        const $list = $('[data-location-order-list]');
+
+        function updateManualPanel() {
+            $panel.toggleClass('hidden', $sortMode.val() !== 'manual');
+        }
+
+        function refreshIndexes() {
+            $list.find('[data-location-order-row]').each(function (index) {
+                $(this).find('[data-order-index]').text(index + 1);
+            });
+        }
+
+        $sortMode.on('change', updateManualPanel);
+        updateManualPanel();
+
+        if ($list.length && $.fn.sortable) {
+            $list.sortable({
+                axis: 'y',
+                handle: '[data-drag-handle]',
+                items: '[data-location-order-row]',
+                update: refreshIndexes
+            });
+        }
+
+        $list.on('click', '[data-order-up]', function () {
+            const $row = $(this).closest('[data-location-order-row]');
+            const $previous = $row.prev('[data-location-order-row]');
+
+            if ($previous.length) {
+                $row.insertBefore($previous);
+                refreshIndexes();
+            }
+        });
+
+        $list.on('click', '[data-order-down]', function () {
+            const $row = $(this).closest('[data-location-order-row]');
+            const $next = $row.next('[data-location-order-row]');
+
+            if ($next.length) {
+                $row.insertAfter($next);
+                refreshIndexes();
+            }
+        });
+    });
+</script>

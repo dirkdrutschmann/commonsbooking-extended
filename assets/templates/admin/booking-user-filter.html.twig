@@ -1,0 +1,17 @@
+<label class="screen-reader-text" for="{{ id|e('html_attr') }}">{{ label|e }}</label>
+<input
+    type="hidden"
+    name="{{ user_id_name|e('html_attr') }}"
+    id="{{ user_id_id|e('html_attr') }}"
+    value="{{ user_id|e('html_attr') }}"
+/>
+<input
+    type="search"
+    name="{{ name|e('html_attr') }}"
+    id="{{ id|e('html_attr') }}"
+    value="{{ value|e('html_attr') }}"
+    placeholder="{{ placeholder|e('html_attr') }}"
+    class="cbadf-user-filter"
+    autocomplete="off"
+    aria-label="{{ label|e('html_attr') }}"
+/>

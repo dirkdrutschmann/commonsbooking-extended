@@ -1,0 +1,75 @@
+<p style="margin:0 0 16px;font-size:16px;color:#183e30;">Ein Account wollte eine Kontaktangabe verwenden, die bereits bei einem anderen Konto hinterlegt ist.</p>
+<p style="margin:0 0 18px;color:#425850;">Bitte prüfe, ob es sich um eine Mehrfachanmeldung, eine versehentliche Eingabe oder einen legitimen Klärungsfall handelt.</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin:0 0 22px;border:1px solid #dbe8e2;border-radius:6px;overflow:hidden;">
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;width:38%;">Kontaktart</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;"><strong>{{conflict_type}}</strong></td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Angefragter Wert</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{conflict_value}}</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Kontext</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{conflict_context}}</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Zeitpunkt</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{event_time}}</td>
+    </tr>
+</table>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin:0 0 22px;border:1px solid #dbe8e2;border-radius:6px;overflow:hidden;">
+    <tr>
+        <td colspan="2" style="padding:10px 12px;background:#e8f3ef;color:#183e30;font-size:14px;font-weight:bold;">Anfragender Account</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;width:38%;">Benutzer</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;"><strong>{{user_login}}</strong></td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Name</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{user_display_name}}</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">E-Mail</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{attempted_email}}</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Telefon</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{attempted_phone}}</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Account-Link</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;word-break:break-all;">{{admin_user_url}}</td>
+    </tr>
+</table>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin:0 0 22px;border:1px solid #dbe8e2;border-radius:6px;overflow:hidden;">
+    <tr>
+        <td colspan="2" style="padding:10px 12px;background:#fff7ed;color:#183e30;font-size:14px;font-weight:bold;">Bereits registrierter Account</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;width:38%;">Benutzer</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;"><strong>{{existing_user_login}}</strong></td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Name</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{existing_user_display_name}}</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">E-Mail</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{existing_user_email}}</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Telefon</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{existing_user_phone}}</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Registriert</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{existing_registered_at}}</td>
+    </tr>
+</table>
+
+<p style="margin:24px 0 0;"><a href="{{existing_user_url}}" style="display:inline-block;background:#008f6b;color:#ffffff;padding:12px 18px;border-radius:6px;text-decoration:none;font-weight:bold;">Bestehenden Account prüfen</a></p>

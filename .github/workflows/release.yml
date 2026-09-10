@@ -1,0 +1,91 @@
+name: CommonsBooking extended CI/CD
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Audit, test and package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Audit production dependencies
+        run: npm run audit:production
+
+      - name: Run tests and PHP lint
+        run: scripts/test.sh
+
+      - name: Build release package
+        run: scripts/package-release.sh dist
+
+      - name: Upload release package
+        uses: actions/upload-artifact@v4
+        with:
+          name: cb-additional-features-${{ github.sha }}
+          path: dist/cb-additional-features.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish WordPress plugin update
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Audit before deployment access
+        run: npm run audit:production
+
+      - name: Download release package
+        uses: actions/download-artifact@v4
+        with:
+          name: cb-additional-features-${{ github.sha }}
+          path: dist
+
+      - name: Configure update-server SSH
+        env:
+          UPDATE_SERVER_SSH_PRIVATE_KEY: ${{ secrets.UPDATE_SERVER_SSH_PRIVATE_KEY }}
+          UPDATE_SERVER_KNOWN_HOSTS: ${{ secrets.UPDATE_SERVER_KNOWN_HOSTS }}
+        run: |
+          install -d -m 0700 "$RUNNER_TEMP/lastenrad-ssh"
+          printf '%s\n' "$UPDATE_SERVER_SSH_PRIVATE_KEY" > "$RUNNER_TEMP/lastenrad-ssh/id_ed25519"
+          printf '%s\n' "$UPDATE_SERVER_KNOWN_HOSTS" > "$RUNNER_TEMP/lastenrad-ssh/known_hosts"
+          chmod 0600 "$RUNNER_TEMP/lastenrad-ssh/id_ed25519" "$RUNNER_TEMP/lastenrad-ssh/known_hosts"
+
+      - name: Publish atomically
+        env:
+          UPDATE_SERVER_HOST: ${{ secrets.UPDATE_SERVER_HOST }}
+          UPDATE_SERVER_USER: ${{ secrets.UPDATE_SERVER_USER }}
+          UPDATE_SERVER_PACKAGE_DIR: ${{ secrets.UPDATE_SERVER_PACKAGE_DIR }}
+          UPDATE_SERVER_SSH_KEY_FILE: ${{ runner.temp }}/lastenrad-ssh/id_ed25519
+          UPDATE_SERVER_KNOWN_HOSTS_FILE: ${{ runner.temp }}/lastenrad-ssh/known_hosts
+        run: scripts/publish-update.sh dist/cb-additional-features.zip

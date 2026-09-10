@@ -1,0 +1,14 @@
+{% set class = class|default('w-full rounded-md border border-slate-300 px-3 py-2 text-sm') %}
+<select
+    {% if name is defined %}name="{{ name|e('html_attr') }}"{% endif %}
+    {% if id is defined %}id="{{ id|e('html_attr') }}"{% endif %}
+    class="{{ class|e('html_attr') }}"
+    {% if attrs is defined %}{{ attrs|raw }}{% endif %}
+>
+    {% if placeholder is defined %}
+        <option value="">{{ placeholder|e }}</option>
+    {% endif %}
+    {% for option in options %}
+        <option value="{{ option.value|e('html_attr') }}" {% if option.selected %}selected{% endif %}>{{ option.label|e }}</option>
+    {% endfor %}
+</select>

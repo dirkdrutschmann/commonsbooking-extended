@@ -1,0 +1,253 @@
+<div class="wrap afcb-admin-tailwind">
+    <div class="max-w-6xl">
+        <p class="mb-4">
+            <a href="{{ back_url|e('html_attr') }}" class="text-sm text-slate-600 hover:text-slate-800">&larr; Zurück zur User-Verwaltung</a>
+        </p>
+        <h1 class="text-2xl font-semibold text-slate-800">Nutzer: {{ user_name|e }}</h1>
+        {% if notice %}
+            {% set notice_kind = notice_type in ['success', 'error', 'warning'] ? notice_type : 'info' %}
+            <div class="mt-4">
+                {% include 'components/notice.html.twig' with { type: notice_kind, message: notice, strong: true } %}
+            </div>
+        {% endif %}
+
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-800">Nutzerdaten (Admin-Überschreibung)</h2>
+            <p class="mt-1 text-sm text-slate-600">Login: <strong>{{ user_login|e }}</strong> · Account-Status: <strong>{{ account_status|e }}</strong></p>
+            <form method="post" action="{{ admin_post_url|e('html_attr') }}" class="mt-4 space-y-4">
+                <input type="hidden" name="action" value="afcb_save_user_data">
+                <input type="hidden" name="user_id" value="{{ user_id|e('html_attr') }}">
+                <input type="hidden" name="afcb_save_user_data_nonce" value="{{ save_user_data_nonce|e('html_attr') }}">
+                <div class="grid gap-4 md:grid-cols-2">
+                    {% for field in editable_fields %}
+                        <div class="space-y-2">
+                            <label for="afcb_field_{{ field.key|e('html_attr') }}" class="block text-sm font-medium text-slate-700">{{ field.label|e }}</label>
+                            {% if field.key == 'user_email' %}
+                                <div class="flex flex-wrap items-center gap-2">
+                                    {% set input_id = 'afcb_field_' ~ field.key %}
+                                    {% set control %}
+                                        {% include 'components/input.html.twig' with {
+                                            type: 'email',
+                                            name: 'afcb_field[' ~ field.key|e('html_attr') ~ ']',
+                                            id: input_id,
+                                            value: field.value,
+                                            class: 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500'
+                                        } %}
+                                    {% endset %}
+                                    {{ control|raw }}
+                                    {% if email_verified %}
+                                        <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800">E-Mail verifiziert</span>
+                                    {% else %}
+                                        <span class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">E-Mail nicht verifiziert</span>
+                                    {% endif %}
+                                </div>
+                            {% elseif field.key == 'afcb_phone' %}
+                                <div class="flex flex-wrap items-center gap-2">
+                                    {% set input_id = 'afcb_field_' ~ field.key %}
+                                    {% set control %}
+                                        {% include 'components/input.html.twig' with {
+                                            type: 'text',
+                                            name: 'afcb_field[' ~ field.key|e('html_attr') ~ ']',
+                                            id: input_id,
+                                            value: field.value,
+                                            class: 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500'
+                                        } %}
+                                    {% endset %}
+                                    {{ control|raw }}
+                                    {% if phone_verified %}
+                                        <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800">Telefon verifiziert</span>
+                                    {% else %}
+                                        <span class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">Telefon nicht verifiziert</span>
+                                    {% endif %}
+                                </div>
+                            {% elseif field.type == 'textarea' %}
+                                {% set control %}
+                                    {% include 'components/textarea.html.twig' with {
+                                        name: 'afcb_field[' ~ field.key|e('html_attr') ~ ']',
+                                        id: 'afcb_field_' ~ field.key,
+                                        value: field.value,
+                                        class: 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500',
+                                        rows: 3
+                                    } %}
+                                {% endset %}
+                                {{ control|raw }}
+                            {% else %}
+                                {% set control %}
+                                    {% include 'components/input.html.twig' with {
+                                        type: 'text',
+                                        name: 'afcb_field[' ~ field.key|e('html_attr') ~ ']',
+                                        id: 'afcb_field_' ~ field.key,
+                                        value: field.value,
+                                        class: 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500'
+                                    } %}
+                                {% endset %}
+                                {{ control|raw }}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="pt-2">
+                    {% include 'components/button.html.twig' with {
+                        type: 'submit',
+                        label: 'Nutzerdaten speichern',
+                        class: 'px-4 py-2 rounded-md bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700'
+                    } %}
+                </div>
+            </form>
+        </div>
+
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-800">Mögliche Dubletten</h2>
+            <p class="mt-2 text-sm text-slate-600">Automatisch erkannte Nutzer mit gleichem Namen oder gleicher Adresse.</p>
+            {% if possible_duplicate_users is empty %}
+                <p class="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">Keine möglichen Dubletten gefunden.</p>
+            {% else %}
+                <div class="mt-4 overflow-x-auto">
+                    <table class="min-w-full text-left text-sm">
+                        <thead class="border-b text-xs uppercase text-slate-500">
+                            <tr>
+                                <th class="py-2 pr-4">Person</th>
+                                <th class="py-2 pr-4">E-Mail</th>
+                                <th class="py-2 pr-4">Treffer</th>
+                                <th class="py-2 pr-4">Status</th>
+                                <th class="py-2">Aktion</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y text-slate-700">
+                            {% for duplicate in possible_duplicate_users %}
+                                <tr>
+                                    <td class="py-3 pr-4">
+                                        <div class="font-medium text-slate-800">{{ duplicate.name|e }}</div>
+                                        <div class="text-xs text-slate-500">{{ duplicate.user_login|e }} · {{ duplicate.roles|e }} · registriert {{ duplicate.registered|e }}</div>
+                                    </td>
+                                    <td class="py-3 pr-4">{{ duplicate.user_email|e }}</td>
+                                    <td class="py-3 pr-4">{{ duplicate.match_reason|e }}</td>
+                                    <td class="py-3 pr-4">{{ duplicate.status|e }}</td>
+                                    <td class="py-3">
+                                        <a href="{{ duplicate.detail_url|e('html_attr') }}" class="inline-flex items-center rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Person öffnen</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-800">Registrierung &amp; Verifizierung</h2>
+            <p class="mt-2 text-sm text-slate-600">Überblick über Registrierung, Einwilligungen, Verifizierung und Prüfstatus.</p>
+            <div class="mt-4 overflow-x-auto">
+                <table class="min-w-full text-left text-sm">
+                    <thead class="text-xs uppercase text-slate-500 border-b">
+                        <tr>
+                            <th class="py-2 pr-4">Eintrag</th>
+                            <th class="py-2 pr-4">Information</th>
+                            <th class="py-2">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y text-slate-700">
+                        {% for row in registration_meta_rows %}
+                            <tr>
+                                <td class="py-2 pr-4 font-medium">{{ row.label|e }}</td>
+                                <td class="py-2 pr-4">{{ row.value|e }}</td>
+                                <td class="py-2">
+                                    {% if row.present %}
+                                        <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800">{{ row.status_label|default('erledigt')|e }}</span>
+                                    {% else %}
+                                        <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">{{ row.status_label|default('offen')|e }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-800">E-Mail-Verifizierung</h2>
+            {% if email_verified %}
+                <p class="mt-2 text-sm text-emerald-600 font-medium">Die E-Mail-Adresse ist bereits verifiziert.</p>
+            {% else %}
+                <p class="mt-2 text-sm text-slate-600">
+                    Sendet einen neuen Verifizierungslink an <strong>{{ user_email|e }}</strong>.
+                </p>
+                <form method="post" action="{{ admin_post_url|e('html_attr') }}" class="mt-4">
+                    <input type="hidden" name="action" value="afcb_admin_resend_email_verification">
+                    <input type="hidden" name="user_id" value="{{ user_id|e('html_attr') }}">
+                    <input type="hidden" name="afcb_admin_resend_email_nonce" value="{{ resend_email_nonce|e('html_attr') }}">
+                    {% include 'components/button.html.twig' with {
+                        type: 'submit',
+                        label: 'Verifizierungs-Mail erneut senden',
+                        class: 'px-4 py-2 rounded-md bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700'
+                    } %}
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-800">Buchungen</h2>
+            <div id="afcb-user-bookings" class="mt-4" data-user-id="{{ user_id|e('html_attr') }}" data-per-page="{{ bookings_per_page|e('html_attr') }}" data-ajax-url="{{ bookings_ajax_url|e('html_attr') }}" data-nonce="{{ bookings_nonce|e('html_attr') }}">
+                <p class="text-sm text-slate-500">Lade Buchungen …</p>
+            </div>
+        </div>
+
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-800">Manuelle Verifizierung</h2>
+            <p class="mt-2 text-sm text-slate-600">
+                Setzt E-Mail und Telefon des Nutzers als verifiziert, ohne dass eine bestätigte Handynummer nötig ist (z.&#8239;B. bei ausländischen Nummern).
+            </p>
+            {% if account_review_reason == 'foreign_phone_manual_verification' and manual_phone_review_note %}
+                <div class="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4">
+                    <h3 class="text-sm font-semibold text-slate-800">Hinweis des Nutzers</h3>
+                    <p class="mt-2 whitespace-pre-line text-sm text-slate-700">{{ manual_phone_review_note|e }}</p>
+                </div>
+            {% endif %}
+            {% if fully_verified %}
+                <p class="mt-3 text-sm text-emerald-600 font-medium">Dieser Nutzer ist bereits vollständig verifiziert.</p>
+            {% else %}
+                <form method="post" action="{{ admin_post_url|e('html_attr') }}" class="mt-4">
+                    <input type="hidden" name="action" value="afcb_manual_verify_user">
+                    <input type="hidden" name="user_id" value="{{ user_id|e('html_attr') }}">
+                    <input type="hidden" name="afcb_manual_verify_nonce" value="{{ manual_verify_nonce|e('html_attr') }}">
+                    {% include 'components/button.html.twig' with {
+                        type: 'submit',
+                        label: 'Manuell verifizieren',
+                        class: 'px-4 py-2 rounded-md bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700'
+                    } %}
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="mt-6 rounded-xl border border-rose-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-rose-700">Nutzer löschen</h2>
+            <p class="mt-2 text-sm text-slate-600">
+                Sendet vor der Löschung eine Mitteilung an <strong>{{ user_email|e }}</strong>. Buchungen und Inhalte bleiben erhalten und werden keinem Nutzer mehr zugeordnet.
+            </p>
+            {% if can_delete_user %}
+                <form method="post" action="{{ admin_post_url|e('html_attr') }}" class="mt-4 space-y-4">
+                    <input type="hidden" name="action" value="afcb_admin_delete_user">
+                    <input type="hidden" name="user_id" value="{{ user_id|e('html_attr') }}">
+                    <input type="hidden" name="afcb_admin_delete_user_nonce" value="{{ delete_user_nonce|e('html_attr') }}">
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700" for="afcb_delete_user_message_editor">Mitteilung an den Nutzer</label>
+                        {{ account_deletion_editor|raw }}
+                    </div>
+                    <label class="flex items-start gap-2 text-sm text-slate-700">
+                        <input type="checkbox" name="afcb_confirm_delete_user" value="1" required class="mt-1">
+                        <span>Ich bestätige, dass dieser Nutzer nach erfolgreichem Versand der Mitteilung gelöscht werden soll.</span>
+                    </label>
+                    {% include 'components/button.html.twig' with {
+                        type: 'submit',
+                        label: 'Mitteilung senden und Nutzer löschen',
+                        class: 'px-4 py-2 rounded-md bg-rose-600 text-white text-sm font-semibold hover:bg-rose-700',
+                        attrs: 'onclick="return confirm(\'Nutzer wirklich löschen? Die Mitteilung wird vorher per E-Mail gesendet.\')"'
+                    } %}
+                </form>
+            {% else %}
+                <p class="mt-3 text-sm font-medium text-amber-700">Dieser Nutzer kann hier nicht gelöscht werden, weil es dein eigener Account oder ein Administratorkonto ist.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>

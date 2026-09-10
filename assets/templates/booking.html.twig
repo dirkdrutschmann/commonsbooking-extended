@@ -1,0 +1,47 @@
+<div class="afcb-bookings afcb-tailwind">
+	<header class="afcb-bookings-header mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+		<div class="afcb-bookings-heading max-w-2xl">
+			<p class="afcb-bookings-kicker text-xs font-bold uppercase tracking-wide text-teal-700">Deine Ausleihen</p>
+			<h2 class="afcb-bookings-title mt-1 text-2xl font-semibold text-slate-900">Aktuelle Buchungen</h2>
+			<p class="afcb-bookings-intro mt-2 text-sm leading-6 text-slate-600">Hier findest du deine bevorstehenden Ausleihen, Abholorte und Zeiten auf einen Blick.</p>
+		</div>
+		{% if historie %}
+			<a href="{{ historie|e('html_attr') }}" class="afcb-bookings-history inline-flex items-center justify-center rounded-md border border-teal-600 px-4 py-3 text-sm font-semibold text-teal-700 hover:bg-teal-50">Buchungshistorie</a>
+		{% endif %}
+	</header>
+
+	{% if bookings %}
+			<div class="afcb-bookings-grid grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				{% for booking in bookings %}
+					{% set picture_url = booking.picture | picture %}
+					<article class="afcb-booking-card overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+						{% if picture_url %}
+							<div class="afcb-booking-media h-40 w-full overflow-hidden bg-white">
+								<img
+									src="{{ picture_url|e('html_attr') }}"
+									alt="{{ ('Lastenrad ' ~ booking.item ~ ' am Standort ' ~ booking.location)|e('html_attr') }}"
+									loading="lazy"
+									decoding="async"
+									class="h-full w-full object-cover"
+								>
+							</div>
+						{% endif %}
+						<div class="afcb-booking-content space-y-2 p-4">
+							<time class="afcb-booking-date block text-sm font-semibold text-slate-800">{{ booking.startDate|e }}</time>
+							<h3 class="afcb-booking-title text-base font-semibold text-slate-900">{{ booking.item|e }}</h3>
+							<p class="afcb-booking-location text-sm text-slate-600">{{ booking.location|e }}</p>
+							{% if booking.startTime %}
+								<p class="afcb-booking-time text-sm text-slate-600">Ab {{ booking.startTime|e }} Uhr</p>
+							{% endif %}
+							<a href="{{ booking.link|e('html_attr') }}" class="afcb-booking-link inline-flex items-center rounded-md bg-teal-600 px-3 py-2 text-xs font-semibold text-white hover:bg-teal-700">Buchung anzeigen</a>
+						</div>
+					</article>
+				{% endfor %}
+			</div>
+		{% else %}
+			<div class="afcb-bookings-empty rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-600">
+				<h3>Aktuell ist keine Ausleihe geplant</h3>
+				<p>Sobald du ein Lastenrad reserviert hast, erscheinen hier Abholort, Datum und Buchungsdetails.</p>
+			</div>
+		{% endif %}
+</div>

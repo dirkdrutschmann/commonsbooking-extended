@@ -1,0 +1,10 @@
+{% set class = class|default('h-4 w-4 rounded border-slate-300 text-teal-600') %}
+<input
+    type="checkbox"
+    {% if name is defined %}name="{{ name|e('html_attr') }}"{% endif %}
+    {% if id is defined %}id="{{ id|e('html_attr') }}"{% endif %}
+    value="{{ value|default('1')|e('html_attr') }}"
+    class="{{ class|e('html_attr') }}"
+    {% if checked %}checked{% endif %}
+    {% if attrs is defined %}{{ attrs|raw }}{% endif %}
+>

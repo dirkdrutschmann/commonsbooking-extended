@@ -1,0 +1,26 @@
+.cbadf-user-filter {
+    min-width: 240px;
+}
+
+.ui-autocomplete.cbadf-booking-user-autocomplete {
+    max-width: 520px;
+    max-height: 320px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #8c8f94;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+    z-index: 100000;
+}
+
+.cbadf-booking-user-autocomplete .ui-menu-item-wrapper {
+    padding: 7px 10px;
+    cursor: pointer;
+}
+
+.cbadf-booking-user-autocomplete .ui-state-active {
+    margin: 0;
+    background: #2271b1;
+    border-color: #2271b1;
+    color: #fff;
+}

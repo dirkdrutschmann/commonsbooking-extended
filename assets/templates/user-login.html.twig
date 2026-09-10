@@ -1,0 +1,136 @@
+<div class="afcb-user-form afcb-tailwind">
+    <div class="afcb-login-card max-w-xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-sm">
+        <header class="afcb-login-intro">
+            <span class="afcb-login-intro-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M12 13.25a4.25 4.25 0 1 0 0-8.5 4.25 4.25 0 0 0 0 8.5Z"></path>
+                    <path d="M4.75 20c.65-3.05 3.35-5.25 7.25-5.25s6.6 2.2 7.25 5.25"></path>
+                </svg>
+            </span>
+            <div>
+                <p class="afcb-login-kicker">Dein Konto</p>
+                <h2 id="afcb-login-title">Willkommen zurück</h2>
+                <p class="afcb-login-copy">Melde dich an, um dein Profil und deine Buchungen zu verwalten.</p>
+            </div>
+        </header>
+
+        {% if notice %}
+            {% include 'components/notice.html.twig' with {
+                id: 'afcb-login-notice',
+                type: notice_type|default('info'),
+                message: notice
+            } only %}
+        {% endif %}
+
+        {% if is_logged_in %}
+            <div class="afcb-login-session mt-6 space-y-4">
+                <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                    <p class="text-sm font-semibold text-emerald-700">Du bist angemeldet.</p>
+                    {% if current_user_display %}
+                        <p class="mt-1 text-sm text-emerald-700">{{ current_user_display|e }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="flex flex-wrap gap-3">
+                    {% if profile_url %}
+                        <a class="inline-flex items-center rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700" href="{{ profile_url|e('html_attr') }}">Zum Profil</a>
+                    {% endif %}
+                    {% if logout_url %}
+                        <a class="inline-flex items-center rounded-lg border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50" href="{{ logout_url|e('html_attr') }}">Abmelden</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+        <form
+            method="post"
+            action="{{ action_url|e('html_attr') }}"
+            class="afcb-form afcb-login-form"
+            aria-labelledby="afcb-login-title"
+            {% if notice %}aria-describedby="afcb-login-notice"{% endif %}
+        >
+            <input type="hidden" name="action" value="afcb_login">
+            {{ nonce_field|raw }}
+            {% if redirect_to %}
+                <input type="hidden" name="redirect_to" value="{{ redirect_to|e('html_attr') }}">
+            {% endif %}
+
+            {% set login_control %}
+                {% include 'components/input.html.twig' with {
+                    type: 'text',
+                    name: 'user_login',
+                    id: 'afcb-user-login',
+                    class: 'afcb-login-input',
+                    attrs: 'autocomplete="username" autocapitalize="none" spellcheck="false" required'
+                } only %}
+            {% endset %}
+            {% include 'components/field.html.twig' with {
+                id: 'afcb-user-login',
+                label: 'Benutzername oder E-Mail',
+                control: login_control,
+                wrapper_class: 'afcb-login-field',
+                label_class: 'afcb-login-label',
+                control_class: 'afcb-login-control'
+            } only %}
+
+            {% set password_control %}
+                {% include 'components/input.html.twig' with {
+                    type: 'password',
+                    name: 'user_pass',
+                    id: 'afcb-user-pass',
+                    class: 'afcb-login-input',
+                    attrs: 'autocomplete="current-password" required'
+                } only %}
+            {% endset %}
+            {% include 'components/field.html.twig' with {
+                id: 'afcb-user-pass',
+                label: 'Passwort',
+                control: password_control,
+                wrapper_class: 'afcb-login-field',
+                label_class: 'afcb-login-label',
+                control_class: 'afcb-login-control'
+            } only %}
+
+            <div class="afcb-login-actions">
+                <label class="afcb-checkbox afcb-login-remember">
+                    {% include 'components/checkbox.html.twig' with {
+                        name: 'rememberme',
+                        id: 'afcb-rememberme',
+                        value: '1'
+                    } only %}
+                    <span>Angemeldet bleiben</span>
+                </label>
+
+                {% if forgot_password_url %}
+                    <a class="afcb-login-link" href="{{ forgot_password_url|e('html_attr') }}">Passwort vergessen?</a>
+                {% endif %}
+            </div>
+
+            {% if recaptcha_site_key and recaptcha_version == 'v2' %}
+                <div class="afcb-recaptcha">
+                    <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key|e('html_attr') }}"></div>
+                </div>
+            {% endif %}
+
+            {% include 'components/button.html.twig' with {
+                type: 'submit',
+                label: 'Anmelden',
+                class: 'afcb-button afcb-button--primary afcb-login-submit'
+            } only %}
+        </form>
+
+        {% if forgot_username_url or register_url %}
+        <nav class="afcb-login-links" aria-label="Hilfe zur Anmeldung">
+            {% if forgot_username_url %}
+                <a class="afcb-login-link" href="{{ forgot_username_url|e('html_attr') }}">Benutzername vergessen?</a>
+            {% endif %}
+            {% if register_url %}
+                <span class="afcb-login-register">
+                    <span>Noch kein Konto?</span>
+                    <a class="afcb-login-link" href="{{ register_url|e('html_attr') }}">Jetzt registrieren</a>
+                </span>
+            {% endif %}
+        </nav>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>

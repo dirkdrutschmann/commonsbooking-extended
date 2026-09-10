@@ -1,0 +1,127 @@
+<div class="cb-qr-check cb-qr-check--admin">
+    <header class="cb-qr-hero {{ status_class|e('html_attr') }}">
+        <div class="cb-qr-hero__icon" aria-hidden="true">
+            {% if status_class == 'cb-qr-status--canceled' %}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 7 10 10M17 7 7 17"></path></svg>
+            {% else %}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"></path></svg>
+            {% endif %}
+        </div>
+        <div class="cb-qr-hero__content">
+            <p class="cb-qr-eyebrow">{{ eyebrow|e }}</p>
+            <div class="cb-qr-hero__title-row">
+                <h2>{{ status_label|e }}</h2>
+                <span class="cb-qr-status-badge">{{ badge_label|e }}</span>
+            </div>
+            <p class="cb-qr-description">{{ description|e }}</p>
+            <div class="cb-qr-timing {{ timing_class|e('html_attr') }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v5l3 2m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg>
+                <p>
+                    <strong>{{ timing_label|e }}</strong>
+                    <span>{{ timing_detail|e }}</span>
+                </p>
+            </div>
+            <p class="cb-qr-reference">#{{ booking_id|e }}</p>
+        </div>
+    </header>
+
+    <section class="cb-qr-section cb-qr-section--primary cb-qr-admin-details" aria-labelledby="cb-qr-admin-booking-title">
+        <div class="cb-qr-section__heading">
+            <span class="cb-qr-section__marker" aria-hidden="true"></span>
+            <h3 id="cb-qr-admin-booking-title">{{ labels.booking_details|e }}</h3>
+        </div>
+
+        <div class="cb-qr-disclosures">
+        <details class="cb-qr-disclosure">
+            <summary>
+                <span class="cb-qr-disclosure__icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>
+                </span>
+                <span>{{ labels.period_access|e }}</span>
+                <svg class="cb-qr-disclosure__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+            </summary>
+            <div class="cb-qr-disclosure__content">
+            <dl class="cb-qr-data-list">
+                <div class="cb-qr-data-row"><dt>{{ labels.booking_id|e }}</dt><dd>#{{ booking_id|e }}</dd></div>
+                <div class="cb-qr-data-row"><dt>{{ labels.status|e }}</dt><dd>{{ status|e }}</dd></div>
+                <div class="cb-qr-data-row"><dt>{{ labels.item|e }}</dt><dd>{{ item|e }}</dd></div>
+                <div class="cb-qr-data-row"><dt>{{ labels.pickup|e }}</dt><dd>{{ pickup_datetime|e }}</dd></div>
+                <div class="cb-qr-data-row"><dt>{{ labels.return|e }}</dt><dd>{{ return_datetime|e }}</dd></div>
+            {% if booking_code %}
+                <div class="cb-qr-data-row cb-qr-data-row--code"><dt>{{ labels.booking_code|e }}</dt><dd>{{ booking_code|e }}</dd></div>
+            {% endif %}
+            </dl>
+            </div>
+        </details>
+
+        <details class="cb-qr-disclosure">
+            <summary>
+                <span class="cb-qr-disclosure__icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5 10v10h14V10M9 20v-6h6v6"></path></svg>
+                </span>
+                <span>{{ labels.location_info|e }}</span>
+                <svg class="cb-qr-disclosure__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+            </summary>
+            <div class="cb-qr-disclosure__content">
+            <dl class="cb-qr-data-list">
+                <div class="cb-qr-data-row"><dt>{{ labels.location|e }}</dt><dd>{{ location|e }}</dd></div>
+            {% if location_address %}
+                <div class="cb-qr-data-row"><dt>{{ labels.address|e }}</dt><dd>{{ location_address|raw }}</dd></div>
+            {% endif %}
+            {% if location_pickup_instructions %}
+                <div class="cb-qr-data-row"><dt>{{ labels.pickup_notes|e }}</dt><dd>{{ location_pickup_instructions|raw }}</dd></div>
+            {% endif %}
+            {% if location_contact %}
+                <div class="cb-qr-data-row"><dt>{{ labels.contact|e }}</dt><dd>{{ location_contact|raw }}</dd></div>
+            {% endif %}
+            </dl>
+            </div>
+        </details>
+
+        <details class="cb-qr-disclosure">
+            <summary>
+                <span class="cb-qr-disclosure__icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>
+                </span>
+                <span>{{ labels.user_info|e }}</span>
+                <svg class="cb-qr-disclosure__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+            </summary>
+            <div class="cb-qr-disclosure__content">
+            <dl class="cb-qr-data-list">
+                <div class="cb-qr-data-row"><dt>{{ labels.name|e }}</dt><dd>{{ user_full_name|e }}</dd></div>
+                <div class="cb-qr-data-row"><dt>{{ labels.email|e }}</dt><dd>{{ user_email|e }}</dd></div>
+                <div class="cb-qr-data-row"><dt>{{ labels.username|e }}</dt><dd>{{ user_login|e }}</dd></div>
+            {% if formatted_user_info %}
+                <div class="cb-qr-data-row cb-qr-data-row--stacked"><dt>{{ labels.profile_details|e }}</dt><dd>{{ formatted_user_info|raw }}</dd></div>
+            {% endif %}
+            {% if admin_booking_display %}
+                <div class="cb-qr-data-row"><dt>{{ labels.created_by|e }}</dt><dd>{{ admin_booking_display|e }}</dd></div>
+            {% endif %}
+            </dl>
+            </div>
+        </details>
+
+        {% if booking_comment or internal_comment %}
+            <details class="cb-qr-disclosure">
+                <summary>
+                    <span class="cb-qr-disclosure__icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"></path></svg>
+                    </span>
+                    <span>{{ labels.comments|e }}</span>
+                    <svg class="cb-qr-disclosure__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+                </summary>
+                <div class="cb-qr-disclosure__content">
+                <dl class="cb-qr-data-list">
+                {% if booking_comment %}
+                    <div class="cb-qr-data-row cb-qr-data-row--stacked"><dt>{{ labels.user_note|e }}</dt><dd>{{ booking_comment|raw }}</dd></div>
+                {% endif %}
+                {% if internal_comment %}
+                    <div class="cb-qr-data-row cb-qr-data-row--stacked"><dt>{{ labels.internal_note|e }}</dt><dd>{{ internal_comment|raw }}</dd></div>
+                {% endif %}
+                </dl>
+                </div>
+            </details>
+        {% endif %}
+        </div>
+    </section>
+</div>

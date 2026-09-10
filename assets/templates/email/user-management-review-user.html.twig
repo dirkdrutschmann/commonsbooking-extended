@@ -1,0 +1,20 @@
+<p style="margin:0 0 6px;color:#008f6b;font-size:13px;font-weight:bold;text-transform:uppercase;">Account-Prüfung</p>
+<h2 style="margin:0 0 14px;color:#183e30;font-size:22px;line-height:1.25;">Dein Konto wird geprüft</h2>
+<p style="margin:0 0 18px;">Hallo {{user_login}},</p>
+<p style="margin:0 0 18px;">deine Registrierung ist eingegangen. Vor der Freigabe prüfen wir noch einzelne Angaben.</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin:22px 0;border:1px solid #dbe8e2;border-radius:6px;overflow:hidden;">
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;width:38%;">Status</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;"><strong>In Prüfung</strong></td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Grund</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{review_reason}}</td>
+    </tr>
+</table>
+
+<div style="margin:22px 0;padding:16px 18px;background:#f3f7f4;border-left:4px solid #008f6b;border-radius:6px;color:#243b35;">
+    <p style="margin:0;font-weight:bold;color:#183e30;">Wie es weitergeht</p>
+    <p style="margin:6px 0 0;">Die Prüfung dauert in der Regel 1-2 Tage. Sobald dein Konto freigegeben ist, erhältst du eine weitere E-Mail.</p>
+</div>

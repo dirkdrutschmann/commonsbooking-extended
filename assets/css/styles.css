@@ -1,0 +1,144 @@
+:root {
+  --vcd-green: #aec905;
+  --vcd-primary: #049dab;
+  --vcd-secondary: #e96656;
+}
+
+.button-link {
+font-size: 0.8em;
+font-family: "RobotoSlab-Bold", serif !important;
+background: var(--vcd-secondary);
+color: #FFFFFF !important;
+padding: 10px 10px;
+font-weight: 800;
+transition: all 0.3s ease;
+box-shadow: 2px 2px 3px rgb(0 0 0 / 25%);
+border-collapse: collapse;
+border-radius: 10px !important;
+text-decoration: none;
+}
+
+.button-history{ 
+	background-color: var(--vcd-secondary);
+	color: #ffffff;
+	border-radius: 3px;
+	border: none;
+	border-width: 1px 1px 1px 1px;
+	width: 100%;
+	text-align: center;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	text-decoration: none;
+}
+.button-history:hover{ 
+	background-color: var(--vcd-green);
+	transition: all 700ms;
+}
+.widget_custom div{
+	margin-bottom: 20px;
+}
+
+
+.button-link:hover {
+  background-color: var(--vcd-green);
+	text-decoration: none;
+	
+}
+
+
+.widget_custom{
+	margin: auto;
+	max-width:350px;
+	width: 100%;
+	background-color: #FFF;
+	
+  justify-content: center;
+	text-align: center;
+
+-webkit-box-shadow: 2px 2px 3px rgba(0,0,0,.25);
+box-shadow: 2px 2px 3px rgba(0,0,0,.25);
+border-radius: 5px;
+border: 3px solid var(--vcd-primary) !important;
+}
+
+.widget_card{
+	margin:auto;
+	margin-bottom:10px;
+	max-width:300px;
+	width: 100%;
+	background-color: #FFF;
+	
+	text-align: center;
+
+-webkit-box-shadow: 2px 2px 3px rgba(0,0,0,.25);
+box-shadow: 2px 2px 3px rgba(0,0,0,.25);
+border-radius: 5px;
+border: 3px solid var(--vcd-primary);
+}
+.widget_card h4{
+		padding-top: 20px;
+}
+
+.card_area{
+	display: flex;
+	flex-wrap: wrap;
+
+}
+
+.widget_custom h4{
+	padding-top: 20px;
+}
+.widget-area{
+	justify-content: center;
+	padding: 20px;
+}
+.widget-card{
+	justify-content: center;
+	padding: 5px;
+	padding-bottom: 15px;
+}
+
+/* Fehler-Hinweise (CommonsBooking) besser lesbar */
+.cb-wrapper .cb-notice.error {
+	color: #7f1d1d !important;
+	background: #fef2f2 !important;
+	border: 1px solid #fecaca !important;
+	border-left: 5px solid #dc2626 !important;
+	font-size: 1rem;
+	line-height: 1.5;
+	font-weight: 700;
+	text-shadow: none;
+}
+.cb-wrapper .cb-notice.error a {
+	color: #b91c1c !important;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+/* Sidebar – VCD-Farben */
+.afcb-sidebar .afcb-btn-primary {
+	background-color: var(--vcd-secondary);
+	color: #fff;
+}
+.afcb-sidebar .afcb-btn-primary:hover {
+	background-color: var(--vcd-green);
+}
+.afcb-sidebar .afcb-btn-login {
+	background-color: var(--vcd-primary);
+	color: #fff;
+}
+.afcb-sidebar .afcb-btn-login:hover {
+	background-color: #038a96;
+	filter: brightness(0.95);
+}
+.afcb-sidebar .afcb-btn-logout {
+	border-color: var(--vcd-secondary);
+	color: var(--vcd-secondary);
+}
+.afcb-sidebar .afcb-btn-logout:hover {
+	background-color: rgba(233, 102, 86, 0.1);
+}
+.afcb-sidebar .afcb-sidebar-card {
+	border-color: var(--vcd-primary);
+}
+

@@ -1,0 +1,24 @@
+<div class="afcb-sidebar afcb-tailwind">
+	<div class="afcb-sidebar-card rounded-xl border bg-white p-4 shadow-sm text-center space-y-3">
+		{% if user %}
+			<div class="text-lg font-semibold text-slate-800">{{ user.user_firstname }}&nbsp;{{ user.user_lastname }}</div>
+			<div class="grid gap-2">
+				<a class="afcb-btn-primary inline-flex items-center justify-center rounded-md px-3 py-2 text-xs font-semibold transition-colors" href="{{ booking|raw }}">meine Buchungen</a>
+				{% if not konto == false %}
+					<a class="inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50" href="{{ konto|raw }}">mein Konto</a>
+				{% endif %}
+				<a class="inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50" href="{{ profil|raw }}">mein Profil</a>
+				<a class="afcb-btn-logout inline-flex items-center justify-center rounded-md border px-3 py-2 text-xs font-semibold transition-colors" href="{{ logout|raw }}">abmelden</a>
+			</div>
+		{% else %}
+			<div class="text-lg font-semibold text-slate-800">Sie sind nicht angemeldet</div>
+			<div class="grid gap-2">
+				<a class="afcb-btn-login inline-flex items-center justify-center rounded-md px-3 py-2 text-xs font-semibold text-white transition-colors" href="{{ login|raw }}">Anmelden</a>
+				<a class="inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50" href="{{ register|raw }}">Registrieren</a>
+			</div>
+		{% endif %}
+	</div>
+	{% if commercial %}
+		<div class="mt-4">{{ commercial|raw }}</div>
+	{% endif %}
+</div>

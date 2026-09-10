@@ -1,0 +1,525 @@
+<div class="wrap afcb-admin-tailwind">
+    <div class="max-w-6xl">
+        <h1 class="text-2xl font-semibold text-slate-800">User Management</h1>
+        {% if notice %}
+            {% set notice_kind = notice_type in ['success', 'error', 'warning'] ? notice_type : 'info' %}
+            <div class="mt-4">
+                {% include 'components/notice.html.twig' with { type: notice_kind, message: notice, strong: true } %}
+            </div>
+        {% endif %}
+
+        <div class="mt-6 border-b border-slate-200">
+            <div class="flex flex-wrap gap-2">
+                <button type="button" class="afcb-tab-button px-4 py-2 text-sm font-semibold text-slate-700 rounded-t-md border border-slate-200 bg-white" data-afcb-tab="settings">Einstellungen</button>
+                <button type="button" class="afcb-tab-button px-4 py-2 text-sm font-semibold text-slate-700 rounded-t-md border border-slate-200 bg-white" data-afcb-tab="pages">Seiten</button>
+                <button type="button" class="afcb-tab-button px-4 py-2 text-sm font-semibold text-slate-700 rounded-t-md border border-slate-200 bg-white" data-afcb-tab="fields">Felder</button>
+                <button type="button" class="afcb-tab-button px-4 py-2 text-sm font-semibold text-slate-700 rounded-t-md border border-slate-200 bg-white" data-afcb-tab="emails">E-Mails</button>
+                <button type="button" class="afcb-tab-button inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 rounded-t-md border border-slate-200 bg-white" data-afcb-tab="reviews">
+                    <span>Prüfung</span>
+                    {% if pending_review_count|default(0) > 0 %}
+                        <span class="inline-flex min-w-5 items-center justify-center rounded-full bg-rose-600 px-1.5 py-0.5 text-xs font-bold leading-none text-white">{{ pending_review_count }}</span>
+                    {% endif %}
+                </button>
+                <button type="button" class="afcb-tab-button px-4 py-2 text-sm font-semibold text-slate-700 rounded-t-md border border-slate-200 bg-white" data-afcb-tab="sms">SMS</button>
+            </div>
+        </div>
+
+        <div class="afcb-tab-panel mt-6" data-afcb-tab-panel="settings">
+            <form method="post" action="options.php" class="space-y-6">
+                {{ settings_fields|raw }}
+                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h2 class="text-lg font-semibold text-slate-800">Basis-Einstellungen</h2>
+                    <div class="mt-4 space-y-4">
+                        {% for field in basic_fields %}
+                            {% if field.type == 'page_or_url' %}
+                                {% set control %}
+                                    <div class="space-y-2">
+                                        {% include 'components/select.html.twig' with {
+                                            name: field.page_name,
+                                            id: field.page_id,
+                                            options: field.page_options,
+                                            class: 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm'
+                                        } %}
+                                        {% include 'components/input.html.twig' with {
+                                            type: 'url',
+                                            name: field.url_name,
+                                            id: field.url_id,
+                                            value: field.url_value,
+                                            class: 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm',
+                                            attrs: 'placeholder="Externe URL, falls keine WordPress-Seite genutzt wird"'
+                                        } %}
+                                    </div>
+                                {% endset %}
+                            {% elseif field.type == 'select' %}
+                                {% set control %}
+                                    {% include 'components/select.html.twig' with {
+                                        name: field.name,
+                                        id: field.key,
+                                        options: field.options,
+                                        class: 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm'
+                                    } %}
+                                {% endset %}
+                            {% else %}
+                                {% set control %}
+                                    {% include 'components/input.html.twig' with {
+                                        type: field.type,
+                                        name: field.name,
+                                        id: field.key,
+                                        value: field.value,
+                                        class: 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm'
+                                    } %}
+                                {% endset %}
+                            {% endif %}
+                            {% include 'components/field.html.twig' with {
+                                label: field.label,
+                                id: field.key,
+                                control: control,
+                                help: field.help|default('')
+                            } %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% include 'components/button.html.twig' with { type: 'submit', label: 'Speichern' } %}
+            </form>
+        </div>
+
+        <div class="afcb-tab-panel mt-6 hidden" data-afcb-tab-panel="pages">
+            <form method="post" action="options.php" class="space-y-6">
+                {{ settings_fields|raw }}
+                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h2 class="text-lg font-semibold text-slate-800">Seitenzuordnung</h2>
+                    <p class="mt-2 text-sm text-slate-600">Wähle die Seiten, auf denen die jeweiligen User-Management Bereiche angezeigt werden.</p>
+                    <div class="mt-4 space-y-4">
+                        {% for field in page_select_fields %}
+                            {% set control %}
+                                {% include 'components/select.html.twig' with {
+                                    name: field.name,
+                                    id: field.key,
+                                    options: field.options,
+                                    class: 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm'
+                                } %}
+                            {% endset %}
+                            {% include 'components/field.html.twig' with {
+                                label: field.label,
+                                id: field.key,
+                                control: control
+                            } %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% include 'components/button.html.twig' with { type: 'submit', label: 'Zuordnung speichern' } %}
+            </form>
+
+            <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 class="text-lg font-semibold text-slate-800">Seiten verwalten</h2>
+                <p class="mt-2 text-sm text-slate-600">Neue Seiten anlegen oder den Inhalt der ausgewählten Seite ersetzen.</p>
+                <div class="mt-4 overflow-x-auto">
+                    <table class="min-w-full text-left text-sm">
+                        <thead class="text-xs uppercase text-slate-500 border-b">
+                            <tr>
+                                <th class="py-2">Seite</th>
+                                <th class="py-2">Aktuelle Auswahl</th>
+                                <th class="py-2">Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y text-slate-700">
+                            {% for row in page_rows %}
+                                <tr>
+                                    <td class="py-3 font-medium">{{ row.title|e }}</td>
+                                    <td class="py-3">
+                                        {% if row.page_id and row.edit_link %}
+                                            <a class="text-teal-600 hover:text-teal-700" href="{{ row.edit_link|e('html_attr') }}">{{ row.page_title|e }}</a>
+                                            <span class="text-xs text-slate-400">(ID: {{ row.page_id }})</span>
+                                        {% else %}
+                                            {{ row.page_title|e }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3">
+                                        <div class="flex flex-wrap gap-2">
+                                            <form method="post" action="{{ admin_post_url|e('html_attr') }}">
+                                                <input type="hidden" name="action" value="afcb_create_user_management_page">
+                                                <input type="hidden" name="page_key" value="{{ row.key|e('html_attr') }}">
+                                                <input type="hidden" name="afcb_create_page_nonce" value="{{ row.create_nonce|e('html_attr') }}">
+                                                {% include 'components/button.html.twig' with {
+                                                    type: 'submit',
+                                                    label: 'Neue Seite',
+                                                    class: 'px-3 py-2 rounded-md bg-slate-800 text-white text-xs font-semibold'
+                                                } %}
+                                            </form>
+                                            <form method="post" action="{{ admin_post_url|e('html_attr') }}">
+                                                <input type="hidden" name="action" value="afcb_replace_user_management_content">
+                                                <input type="hidden" name="page_key" value="{{ row.key|e('html_attr') }}">
+                                                <input type="hidden" name="afcb_replace_content_nonce" value="{{ row.replace_nonce|e('html_attr') }}">
+                                                {% include 'components/button.html.twig' with {
+                                                    type: 'submit',
+                                                    label: 'Content ersetzen',
+                                                    class: 'px-3 py-2 rounded-md border border-slate-300 text-xs font-semibold text-slate-700' ~ (row.page_id ? '' : ' opacity-50 cursor-not-allowed'),
+                                                    attrs: row.page_id ? '' : 'disabled'
+                                                } %}
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="afcb-tab-panel mt-6 hidden" data-afcb-tab-panel="fields">
+            <form method="post" action="options.php" class="space-y-6">
+                {{ settings_fields|raw }}
+                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h2 class="text-lg font-semibold text-slate-800">Pflichtfelder</h2>
+                    <p class="mt-2 text-sm text-slate-600">Wähle die Standardfelder, die Pflicht sein sollen.</p>
+                    <div class="mt-4 space-y-2">
+                        {% for field in required_fields %}
+                            <label class="flex items-center gap-2 text-sm text-slate-700">
+                                {% include 'components/checkbox.html.twig' with {
+                                    name: field.name,
+                                    value: field.key,
+                                    checked: field.checked
+                                } %}
+                                <span>{{ field.label|e }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-semibold text-slate-800">Benutzerdefinierte Felder</h2>
+                            <p class="mt-2 text-sm text-slate-600">Füge eigene Felder hinzu und markiere sie optional als Pflichtfeld.</p>
+                        </div>
+                        <button type="button" id="afcb-add-field" class="px-3 py-2 rounded-md bg-teal-600 text-white text-xs font-semibold">Feld hinzufügen</button>
+                    </div>
+                    <div id="afcb-custom-fields" class="mt-4 space-y-3" data-index="{{ custom_fields_index }}">
+                        {% for field in custom_fields %}
+                            <div class="afcb-custom-field grid gap-4 md:grid-cols-12 border border-slate-100 rounded-xl p-4">
+                                <div class="md:col-span-3">
+                                    <label class="text-xs font-semibold text-slate-500">Meta-Key</label>
+                                    <input class="mt-1 w-full rounded-md border border-slate-300 px-2 py-1 text-sm" type="text" name="{{ option_key }}[custom_fields][{{ field.index }}][key]" placeholder="Meta-Key" value="{{ field.key|e('html_attr') }}">
+                                </div>
+                                <div class="md:col-span-3">
+                                    <label class="text-xs font-semibold text-slate-500">Label</label>
+                                    <input class="mt-1 w-full rounded-md border border-slate-300 px-2 py-1 text-sm" type="text" name="{{ option_key }}[custom_fields][{{ field.index }}][label]" placeholder="Label" value="{{ field.label|e('html_attr') }}">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="text-xs font-semibold text-slate-500">Typ</label>
+                                    <select class="mt-1 w-full rounded-md border border-slate-300 px-2 py-1 text-sm" name="{{ option_key }}[custom_fields][{{ field.index }}][type]">
+                                        {% for type in custom_field_types %}
+                                            <option value="{{ type.value|e('html_attr') }}" {% if type.value == field.type %}selected{% endif %}>{{ type.label|e }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="md:col-span-3">
+                                    <label class="text-xs font-semibold text-slate-500">Optionen</label>
+                                    <input class="mt-1 w-full rounded-md border border-slate-300 px-2 py-1 text-sm" type="text" name="{{ option_key }}[custom_fields][{{ field.index }}][options]" placeholder="Optionen (comma)" value="{{ field.options_raw|e('html_attr') }}">
+                                </div>
+                                <div class="md:col-span-1 flex items-end">
+                                    <label class="flex items-center gap-2 text-xs text-slate-600">
+                                        <input type="checkbox" name="{{ option_key }}[custom_fields][{{ field.index }}][required]" value="1" {% if field.required %}checked{% endif %}>
+                                        Pflicht
+                                    </label>
+                                </div>
+                                <div class="md:col-span-12 flex justify-end">
+                                    <button type="button" class="afcb-remove-field text-xs font-semibold text-rose-600 hover:text-rose-700">Entfernen</button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% include 'components/button.html.twig' with { type: 'submit', label: 'Felder speichern' } %}
+            </form>
+
+            <script type="text/template" id="afcb-custom-field-template">
+                <div class="afcb-custom-field grid gap-4 md:grid-cols-12 border border-slate-100 rounded-xl p-4">
+                    <div class="md:col-span-3">
+                        <label class="text-xs font-semibold text-slate-500">Meta-Key</label>
+                        <input class="mt-1 w-full rounded-md border border-slate-300 px-2 py-1 text-sm" type="text" name="{{ option_key }}[custom_fields][__INDEX__][key]" placeholder="Meta-Key">
+                    </div>
+                    <div class="md:col-span-3">
+                        <label class="text-xs font-semibold text-slate-500">Label</label>
+                        <input class="mt-1 w-full rounded-md border border-slate-300 px-2 py-1 text-sm" type="text" name="{{ option_key }}[custom_fields][__INDEX__][label]" placeholder="Label">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-semibold text-slate-500">Typ</label>
+                        <select class="mt-1 w-full rounded-md border border-slate-300 px-2 py-1 text-sm" name="{{ option_key }}[custom_fields][__INDEX__][type]">
+                            {% for type in custom_field_types %}
+                                <option value="{{ type.value|e('html_attr') }}">{{ type.label|e }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="md:col-span-3">
+                        <label class="text-xs font-semibold text-slate-500">Optionen</label>
+                        <input class="mt-1 w-full rounded-md border border-slate-300 px-2 py-1 text-sm" type="text" name="{{ option_key }}[custom_fields][__INDEX__][options]" placeholder="Optionen (comma)">
+                    </div>
+                    <div class="md:col-span-1 flex items-end">
+                        <label class="flex items-center gap-2 text-xs text-slate-600">
+                            <input type="checkbox" name="{{ option_key }}[custom_fields][__INDEX__][required]" value="1">
+                            Pflicht
+                        </label>
+                    </div>
+                    <div class="md:col-span-12 flex justify-end">
+                        <button type="button" class="afcb-remove-field text-xs font-semibold text-rose-600 hover:text-rose-700">Entfernen</button>
+                    </div>
+                </div>
+            </script>
+        </div>
+
+        <div class="afcb-tab-panel mt-6 hidden" data-afcb-tab-panel="emails">
+            <form method="post" action="options.php" class="space-y-6">
+                {{ settings_fields|raw }}
+                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-6">
+                    <div>
+                        <h2 class="text-lg font-semibold text-slate-800">Zentraler E-Mail CI-Wrapper</h2>
+                        <p class="mt-2 text-sm text-slate-600">Diese HTML-Vorlage wird auf WordPress-Mails angewendet. Nutze <code>{{ '{{content}}' }}</code> als Platzhalter für den jeweiligen E-Mail-Inhalt. Mails aus dem Newsletter-Plugin bleiben unverändert.</p>
+                        <div class="mt-4 grid gap-4 md:grid-cols-2">
+                            {% set header_cid_control %}
+                                {% include 'components/input.html.twig' with {
+                                    type: 'text',
+                                    id: 'email_header_image_cid',
+                                    name: option_key ~ '[email_header_image_cid]',
+                                    value: email_header_image_cid,
+                                    class: 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm'
+                                } only %}
+                            {% endset %}
+                            {% include 'components/field.html.twig' with {
+                                label: 'Header-Bild CID oder URL',
+                                id: 'email_header_image_cid',
+                                control: header_cid_control
+                            } only %}
+
+                            {% set header_alt_control %}
+                                {% include 'components/input.html.twig' with {
+                                    type: 'text',
+                                    id: 'email_header_image_alt',
+                                    name: option_key ~ '[email_header_image_alt]',
+                                    value: email_header_image_alt,
+                                    class: 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm'
+                                } only %}
+                            {% endset %}
+                            {% include 'components/field.html.twig' with {
+                                label: 'Header-Bild Alt-Text',
+                                id: 'email_header_image_alt',
+                                control: header_alt_control
+                            } only %}
+                        </div>
+                        <div class="mt-6">
+                            <label class="block text-sm font-medium text-slate-700">Footer-Text</label>
+                            <div class="mt-2">{{ email_footer_editor|raw }}</div>
+                        </div>
+                        {% set html_control %}
+                            {% include 'components/textarea.html.twig' with {
+                                id: 'email_html_template',
+                                name: option_key ~ '[email_html_template]',
+                                value: email_html_template,
+                                class: 'mt-3 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm h-40'
+                            } only %}
+                        {% endset %}
+                        {% include 'components/field.html.twig' with {
+                            label: 'HTML Vorlage',
+                            id: 'email_html_template',
+                            control: html_control
+                        } only %}
+                    </div>
+                    <div class="rounded-lg border border-slate-200 bg-slate-50 p-4 text-xs text-slate-600">
+                        Verfügbare Tags: <code>{{ '{{site_name}}' }}</code>, <code>{{ '{{site_url}}' }}</code>, <code>{{ '{{year}}' }}</code>, <code>{{ '{{user_id}}' }}</code>, <code>{{ '{{user_login}}' }}</code>, <code>{{ '{{user_email}}' }}</code>, <code>{{ '{{user_phone}}' }}</code>, <code>{{ '{{user_display_name}}' }}</code>, <code>{{ '{{user_roles}}' }}</code>, <code>{{ '{{registered_at}}' }}</code>, <code>{{ '{{admin_user_url}}' }}</code>, <code>{{ '{{account_status}}' }}</code>, <code>{{ '{{email_verified}}' }}</code>, <code>{{ '{{phone_verified}}' }}</code>, <code>{{ '{{changed_at}}' }}</code>, <code>{{ '{{changed_by}}' }}</code>, <code>{{ '{{password_change_source}}' }}</code>, <code>{{ '{{conflict_type}}' }}</code>, <code>{{ '{{conflict_value}}' }}</code>, <code>{{ '{{conflict_context}}' }}</code>, <code>{{ '{{attempted_email}}' }}</code>, <code>{{ '{{attempted_phone}}' }}</code>, <code>{{ '{{existing_user_id}}' }}</code>, <code>{{ '{{existing_user_login}}' }}</code>, <code>{{ '{{existing_user_email}}' }}</code>, <code>{{ '{{existing_user_phone}}' }}</code>, <code>{{ '{{existing_user_display_name}}' }}</code>, <code>{{ '{{existing_registered_at}}' }}</code>, <code>{{ '{{existing_user_url}}' }}</code>, <code>{{ '{{verification_link}}' }}</code>, <code>{{ '{{reset_link}}' }}</code>, <code>{{ '{{delete_profile_link}}' }}</code>, <code>{{ '{{review_reason}}' }}</code>, <code>{{ '{{review_url}}' }}</code>, <code>{{ '{{match_list}}' }}</code>, <code>{{ '{{subject}}' }}</code>, <code>{{ '{{content}}' }}</code>, <code>{{ '{{header_image_html}}' }}</code>, <code>{{ '{{footer_text}}' }}</code>
+                    </div>
+                    <p class="text-sm text-slate-600">Die E-Mail an den Nutzer bei <strong>Ablehnung</strong> eines Accounts ist die Vorlage „Account abgelehnt“ unten und kann hier bearbeitet werden.</p>
+
+                    {% for template in email_templates %}
+                        <div class="border-t border-slate-200 pt-6">
+                            <h3 class="text-md font-semibold text-slate-800">{{ template.label|e }}</h3>
+                            <div class="mt-4 grid gap-4">
+                                {% set subject_control %}
+                                    {% include 'components/input.html.twig' with {
+                                        type: 'text',
+                                        id: template.subject_key,
+                                        name: option_key ~ '[' ~ template.subject_key ~ ']',
+                                        value: template.subject_value,
+                                        class: 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm'
+                                    } only %}
+                                {% endset %}
+                                {% include 'components/field.html.twig' with {
+                                    label: 'Betreff',
+                                    id: template.subject_key,
+                                    control: subject_control
+                                } only %}
+
+                                {% set body_control %}
+                                    {% include 'components/textarea.html.twig' with {
+                                        id: template.body_key,
+                                        name: option_key ~ '[' ~ template.body_key ~ ']',
+                                        value: template.body_value,
+                                        class: 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm h-32'
+                                    } only %}
+                                {% endset %}
+                                {% include 'components/field.html.twig' with {
+                                    label: 'Inhalt (HTML erlaubt)',
+                                    id: template.body_key,
+                                    control: body_control
+                                } only %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% include 'components/button.html.twig' with { type: 'submit', label: 'E-Mails speichern' } %}
+            </form>
+        </div>
+
+        <div class="afcb-tab-panel mt-6 hidden" data-afcb-tab-panel="reviews">
+            <form method="post" action="options.php" class="mb-6 space-y-6">
+                {{ settings_fields|raw }}
+                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h2 class="text-lg font-semibold text-slate-800">Admin-Benachrichtigungen</h2>
+                    <p class="mt-2 text-sm text-slate-600">Diese Empfänger erhalten E-Mails bei manueller Prüfung, neuen Benutzern und geänderten Passwörtern. Mehrere Adressen können per Zeile, Komma oder Semikolon getrennt werden. Ohne Eintrag werden WordPress-Administratoren benachrichtigt.</p>
+                    <div class="mt-4">
+                        {% set review_notification_control %}
+                            {% include 'components/textarea.html.twig' with {
+                                id: 'review_notification_emails',
+                                name: option_key ~ '[review_notification_emails]',
+                                value: review_notification_emails,
+                                class: 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm h-24'
+                            } only %}
+                        {% endset %}
+                        {% include 'components/field.html.twig' with {
+                            label: 'Admin-E-Mail-Adressen',
+                            id: 'review_notification_emails',
+                            control: review_notification_control
+                        } only %}
+                    </div>
+                    <div class="mt-4">
+                        {% include 'components/button.html.twig' with { type: 'submit', label: 'Empfänger speichern' } %}
+                    </div>
+                </div>
+            </form>
+
+            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 class="text-lg font-semibold text-slate-800">Offene Prüfungen</h2>
+                <p class="mt-2 text-sm text-slate-600">Nutzer mit unklarer Zuordnung. Nutzerdaten, Buchungen und manuelle Verifizierung findest du in der <a href="{{ wp_users_url|e('html_attr') }}" class="text-teal-600 hover:text-teal-700">normalen Benutzerliste</a> („Nutzerdaten &amp; Verifizierung“ bei jedem Nutzer).</p>
+                {% if pending_users is empty %}
+                    <p class="mt-3 text-sm text-slate-600">Keine offenen Prüfungen.</p>
+                {% else %}
+                    <div class="mt-4 overflow-x-auto">
+                        <table class="min-w-full text-left text-sm">
+                            <thead class="text-xs uppercase text-slate-500 border-b">
+                                <tr>
+                                    <th class="py-2">Benutzername</th>
+                                    <th class="py-2">E-Mail</th>
+                                    <th class="py-2">Name</th>
+                                    <th class="py-2">Grund</th>
+                                    <th class="py-2">Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                {% for user in pending_users %}
+                                    <tr>
+                                        <td class="py-3">
+                                            <a href="{{ user.detail_url|e('html_attr') }}" class="font-medium text-teal-600 hover:text-teal-700">{{ user.user_login|e }}</a>
+                                        </td>
+                                        <td class="py-3">{{ user.user_email|e }}</td>
+                                        <td class="py-3">{{ user.name|e }}</td>
+                                        <td class="py-3">{{ user.reason|e }}</td>
+                                        <td class="py-3">
+                                            <div class="flex flex-wrap gap-2 items-center">
+                                                <a href="{{ user.detail_url|e('html_attr') }}" class="px-3 py-2 rounded-md border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50">Person öffnen</a>
+                                                {% if user.has_compare %}
+                                                    <button type="button" class="afcb-review-compare-btn px-3 py-2 rounded-md border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50" data-user-id="{{ user.id|e('html_attr') }}">Vergleich</button>
+                                                {% endif %}
+                                                <form method="post" action="{{ admin_post_url|e('html_attr') }}" class="inline">
+                                                    <input type="hidden" name="action" value="afcb_review_user">
+                                                    <input type="hidden" name="review_action" value="approve">
+                                                    <input type="hidden" name="user_id" value="{{ user.id|e('html_attr') }}">
+                                                    <input type="hidden" name="afcb_review_user_nonce" value="{{ user.nonce|e('html_attr') }}">
+                                                    {% include 'components/button.html.twig' with {
+                                                        type: 'submit',
+                                                        label: 'Freigeben',
+                                                        class: 'px-3 py-2 rounded-md bg-teal-600 text-white text-xs font-semibold'
+                                                    } %}
+                                                </form>
+                                                <form method="post" action="{{ admin_post_url|e('html_attr') }}" class="inline">
+                                                    <input type="hidden" name="action" value="afcb_review_user">
+                                                    <input type="hidden" name="review_action" value="decline">
+                                                    <input type="hidden" name="user_id" value="{{ user.id|e('html_attr') }}">
+                                                    <input type="hidden" name="afcb_review_user_nonce" value="{{ user.nonce|e('html_attr') }}">
+                                                    {% include 'components/button.html.twig' with {
+                                                        type: 'submit',
+                                                        label: 'Ablehnen',
+                                                        class: 'px-3 py-2 rounded-md border border-slate-300 text-xs font-semibold text-slate-700'
+                                                    } %}
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div id="afcb-review-compare-modal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-modal="true" role="dialog">
+                <div class="flex min-h-full items-center justify-center p-4">
+                    <div class="fixed inset-0 bg-slate-900/60" data-afcb-compare-close></div>
+                    <div class="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-xl border border-slate-200 bg-white shadow-xl">
+                        <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+                            <h3 class="text-lg font-semibold text-slate-800">Daten vergleichen</h3>
+                            <button type="button" class="afcb-review-compare-close rounded-md p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-700" aria-label="Schließen">&times;</button>
+                        </div>
+                        <div id="afcb-review-compare-content" class="flex-1 overflow-auto px-6 py-4">
+                            <p class="text-sm text-slate-500">Lade …</p>
+                        </div>
+                        <div class="border-t border-slate-200 px-6 py-3 flex justify-end">
+                            <button type="button" class="afcb-review-compare-close px-4 py-2 rounded-md border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50">Schließen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="afcb-tab-panel mt-6 hidden" data-afcb-tab-panel="sms">
+            <form method="post" action="options.php" class="space-y-6">
+                {{ settings_fields|raw }}
+                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <h2 class="text-lg font-semibold text-slate-800">Nachrichten-Integration</h2>
+                    <p class="mt-2 text-sm text-slate-600">Versand über die ddvelop Messages API. Für SMS und Signal wird dieselbe URL genutzt; der Kanal wird serverseitig über <code>channel</code> gesetzt.</p>
+                    <div class="mt-4 space-y-4">
+                        {% for field in sms_fields %}
+                            {% if field.type == 'textarea' %}
+                                {% set control %}
+                                    {% include 'components/textarea.html.twig' with {
+                                        name: field.name,
+                                        id: field.key,
+                                        value: field.value,
+                                        class: 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm h-24'
+                                    } %}
+                                {% endset %}
+                            {% else %}
+                                {% set control %}
+                                    {% include 'components/input.html.twig' with {
+                                        type: field.type,
+                                        name: field.name,
+                                        id: field.key,
+                                        value: field.value,
+                                        class: 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm'
+                                    } %}
+                                {% endset %}
+                            {% endif %}
+                            {% include 'components/field.html.twig' with {
+                                label: field.label,
+                                id: field.key,
+                                control: control
+                            } %}
+                        {% endfor %}
+                    </div>
+                    <p class="mt-4 text-xs text-slate-500">Platzhalter für den Verifizierungstext: <code>{{ '{{vorname}}' }}</code>, <code>{{ '{{nachname}}' }}</code>, <code>{{ '{{page_title}}' }}</code>, <code>{{ '{{code}}' }}</code></p>
+                </div>
+                {% include 'components/button.html.twig' with { type: 'submit', label: 'Nachrichten-Einstellungen speichern' } %}
+            </form>
+        </div>
+    </div>
+</div>

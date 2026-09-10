@@ -1,0 +1,8 @@
+.cb-resend-email-link.cb-sending {
+    color: #ffb900 !important;
+    pointer-events: none;
+}
+
+.cb-resend-email-link.cb-sent {
+    color: #46b450 !important;
+}

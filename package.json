@@ -1,0 +1,7 @@
+{
+  "name": "commonsbooking-extended",
+  "private": true,
+  "scripts": {
+    "audit:production": "npm audit --omit=dev --audit-level=high"
+  }
+}

@@ -1,0 +1,34 @@
+<p style="margin:0 0 16px;font-size:16px;color:#183e30;">Ein neuer Benutzer wurde angelegt.</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin:0 0 22px;border:1px solid #dbe8e2;border-radius:6px;overflow:hidden;">
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;width:38%;">Benutzer</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;"><strong>{{user_login}}</strong></td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Name</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{user_display_name}}</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">E-Mail</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{user_email}}</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Telefon</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{user_phone}}</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Registriert</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{registered_at}}</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Status</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">{{account_status}}</td>
+    </tr>
+    <tr>
+        <td style="padding:10px 12px;background:#f3f7f4;color:#5f746b;font-size:13px;">Verifizierung</td>
+        <td style="padding:10px 12px;color:#183e30;font-size:14px;">E-Mail: {{email_verified}} · Telefon: {{phone_verified}}</td>
+    </tr>
+</table>
+
+<p style="margin:24px 0 0;"><a href="{{admin_user_url}}" style="display:inline-block;background:#008f6b;color:#ffffff;padding:12px 18px;border-radius:6px;text-decoration:none;font-weight:bold;">Nutzer prüfen</a></p>

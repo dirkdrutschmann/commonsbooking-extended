@@ -1,0 +1,288 @@
+<div class="wrap afcb-admin-tailwind">
+    <div class="max-w-6xl">
+        <h1 class="text-2xl font-semibold text-slate-800">{{ title|e }}</h1>
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <form method="post" action="{{ action_url|e('html_attr') }}" class="space-y-6">
+                {{ settings_fields|raw }}
+
+                {% for section in sections %}
+                    <div class="border-t border-slate-200 pt-6">
+                        <h2 class="text-lg font-semibold text-slate-800">{{ section.title|e }}</h2>
+                        {% if section.description %}
+                            <p class="mt-2 text-sm text-slate-600">{{ section.description|e }}</p>
+                        {% endif %}
+                        <div class="mt-4 space-y-4">
+                            {% for field in section.fields %}
+                                {% if field.type == 'checkbox' %}
+                                    {% set control %}
+                                        {% include 'components/checkbox.html.twig' with {
+                                            name: field.name,
+                                            id: field.key,
+                                            checked: field.checked
+                                        } %}
+                                    {% endset %}
+                                    {% include 'components/field.html.twig' with {
+                                        label: field.label,
+                                        id: field.key,
+                                        control: control,
+                                        help: field.help|default(''),
+                                        control_class: 'flex items-center'
+                                    } %}
+                                {% elseif field.type == 'booking_groups' %}
+                                    <div
+                                        class="space-y-4"
+                                        data-afcb-booking-groups
+                                        data-next-index="{{ field.next_index|e('html_attr') }}"
+                                    >
+                                        {% if field.items is not empty %}
+                                            <div class="space-y-4" data-afcb-booking-groups-list>
+                                                {% for group in field.groups %}
+                                                    {% set group_index = loop.index0 %}
+                                                    <div class="rounded-lg border border-slate-200 bg-slate-50 p-4" data-afcb-booking-group-row>
+                                                        <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto] md:items-start">
+                                                            <div>
+                                                                <label class="block text-sm font-medium text-slate-700" for="afcb-booking-group-name-{{ group_index|e('html_attr') }}">Name des Verbunds</label>
+                                                                <input
+                                                                    type="text"
+                                                                    id="afcb-booking-group-name-{{ group_index|e('html_attr') }}"
+                                                                    name="{{ field.name_prefix|e('html_attr') }}[{{ group_index|e('html_attr') }}][name]"
+                                                                    value="{{ group.name|e('html_attr') }}"
+                                                                    placeholder="z. B. Fahrrad + Anhänger"
+                                                                    class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+                                                                >
+                                                            </div>
+                                                            <div>
+                                                                <label class="block text-sm font-medium text-slate-700" for="afcb-booking-group-items-{{ group_index|e('html_attr') }}">Zusammengehörige Artikel</label>
+                                                                <select
+                                                                    id="afcb-booking-group-items-{{ group_index|e('html_attr') }}"
+                                                                    name="{{ field.name_prefix|e('html_attr') }}[{{ group_index|e('html_attr') }}][item_ids][]"
+                                                                    class="mt-1 min-h-32 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+                                                                    multiple
+                                                                    size="8"
+                                                                >
+                                                                    {% for item in field.items %}
+                                                                        <option value="{{ item.id|e('html_attr') }}" {% if item.id in group.item_ids %}selected{% endif %}>{{ item.title|e }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                                <p class="mt-1 text-xs text-slate-500">Mindestens zwei Artikel auswählen. Mehrfachauswahl mit Strg/Cmd oder Umschalttaste.</p>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                class="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50"
+                                                                data-afcb-remove-booking-group
+                                                            >
+                                                                Entfernen
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                class="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                                                data-afcb-add-booking-group
+                                            >
+                                                Weiteren Verbund hinzufügen
+                                            </button>
+
+                                            <template data-afcb-booking-group-template>
+                                                <div class="rounded-lg border border-slate-200 bg-slate-50 p-4" data-afcb-booking-group-row>
+                                                    <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto] md:items-start">
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-slate-700" for="afcb-booking-group-name-__INDEX__">Name des Verbunds</label>
+                                                            <input
+                                                                type="text"
+                                                                id="afcb-booking-group-name-__INDEX__"
+                                                                name="{{ field.name_prefix|e('html_attr') }}[__INDEX__][name]"
+                                                                placeholder="z. B. Fahrrad + Anhänger"
+                                                                class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+                                                            >
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-slate-700" for="afcb-booking-group-items-__INDEX__">Zusammengehörige Artikel</label>
+                                                            <select
+                                                                id="afcb-booking-group-items-__INDEX__"
+                                                                name="{{ field.name_prefix|e('html_attr') }}[__INDEX__][item_ids][]"
+                                                                class="mt-1 min-h-32 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+                                                                multiple
+                                                                size="8"
+                                                            >
+                                                                {% for item in field.items %}
+                                                                    <option value="{{ item.id|e('html_attr') }}">{{ item.title|e }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                            <p class="mt-1 text-xs text-slate-500">Mindestens zwei Artikel auswählen. Mehrfachauswahl mit Strg/Cmd oder Umschalttaste.</p>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            class="rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50"
+                                                            data-afcb-remove-booking-group
+                                                        >
+                                                            Entfernen
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </template>
+
+                                            <p class="text-xs text-slate-500">
+                                                Nur Buchungen derselben Person mit exakt gleichem Standort, Start und Ende werden zusammengefasst. Ein Artikel kann nur einem Verbund angehören.
+                                            </p>
+                                        {% else %}
+                                            <p class="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                                                Es wurden keine CommonsBooking-Artikel gefunden.
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                {% elseif field.type == 'textarea' %}
+                                    {% set control %}
+                                        {% include 'components/textarea.html.twig' with {
+                                            name: field.name,
+                                            id: field.key,
+                                            value: field.value,
+                                            rows: field.key == 'blacklist_notice_text' ? 3 : 5,
+                                            class: 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm'
+                                        } %}
+                                    {% endset %}
+                                    {% include 'components/field.html.twig' with {
+                                        label: field.label,
+                                        id: field.key,
+                                        control: control,
+                                        help: field.help
+                                    } %}
+                                {% else %}
+                                    {% set control %}
+                                        {% include 'components/input.html.twig' with {
+                                            type: field.type,
+                                            name: field.name,
+                                            id: field.key,
+                                            value: field.value,
+                                            class: 'w-full max-w-md rounded-md border border-slate-300 px-3 py-2 text-sm'
+                                        } %}
+                                    {% endset %}
+                                    {% include 'components/field.html.twig' with {
+                                        label: field.label,
+                                        id: field.key,
+                                        control: control,
+                                        help: field.help|default('')
+                                    } %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% include 'components/button.html.twig' with {
+                    type: 'submit',
+                    label: 'Speichern'
+                } %}
+            </form>
+        </div>
+
+        <h2 class="mt-10 text-lg font-semibold text-slate-800">Historie</h2>
+        {% if logs is not empty %}
+            <div class="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
+                <p>
+                    Einträge {{ logs_pagination.from|e }}-{{ logs_pagination.to|e }}
+                    von {{ logs_pagination.total_entries|e }}
+                </p>
+                {% if logs_pagination.total_pages > 1 %}
+                    <p>
+                        Seite {{ logs_pagination.current_page|e }}
+                        von {{ logs_pagination.total_pages|e }}
+                    </p>
+                {% endif %}
+            </div>
+            <div class="mt-4 overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                <table class="min-w-full text-left text-sm">
+                    <thead class="border-b bg-slate-50 text-xs uppercase text-slate-500">
+                        <tr>
+                            <th class="px-4 py-3">Nutzer</th>
+                            <th class="px-4 py-3">E-Mail</th>
+                            <th class="px-4 py-3">Artikel</th>
+                            <th class="px-4 py-3">Standort</th>
+                            <th class="px-4 py-3">Zeitraum</th>
+                            <th class="px-4 py-3">Versuch</th>
+                            <th class="px-4 py-3">Grund</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y text-slate-700">
+                        {% for row in logs %}
+                            <tr>
+                                <td class="px-4 py-3">{{ row.user|e }}</td>
+                                <td class="px-4 py-3">{{ row.email|e }}</td>
+                                <td class="px-4 py-3">{{ row.item|e }}</td>
+                                <td class="px-4 py-3">{{ row.location|e }}</td>
+                                <td class="px-4 py-3">{{ row.period|e }}</td>
+                                <td class="px-4 py-3">{{ row.attempt|e }}</td>
+                                <td class="px-4 py-3">{{ row.reason|e }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if logs_pagination.total_pages > 1 %}
+                <nav class="mt-4 flex flex-wrap items-center gap-2" aria-label="Historie Pagination">
+                    {% if logs_pagination.previous_url %}
+                        <a class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50" href="{{ logs_pagination.previous_url|e('html_attr') }}">Zurück</a>
+                    {% else %}
+                        <span class="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-400">Zurück</span>
+                    {% endif %}
+
+                    {% set last_page_number = 0 %}
+                    {% for page in logs_pagination.pages %}
+                        {% if last_page_number and page.number > last_page_number + 1 %}
+                            <span class="px-1 text-sm text-slate-400">…</span>
+                        {% endif %}
+                        {% if page.current %}
+                            <span class="rounded-md border border-slate-800 bg-slate-800 px-3 py-1.5 text-sm font-semibold text-white">{{ page.number|e }}</span>
+                        {% else %}
+                            <a class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50" href="{{ page.url|e('html_attr') }}">{{ page.number|e }}</a>
+                        {% endif %}
+                        {% set last_page_number = page.number %}
+                    {% endfor %}
+
+                    {% if logs_pagination.next_url %}
+                        <a class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50" href="{{ logs_pagination.next_url|e('html_attr') }}">Weiter</a>
+                    {% else %}
+                        <span class="rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-400">Weiter</span>
+                    {% endif %}
+                </nav>
+            {% endif %}
+        {% else %}
+            <p class="mt-3 text-sm text-slate-600">Es liegen noch keine Einträge zu Buchungsbeschränkungen vor.</p>
+        {% endif %}
+
+        <h2 class="mt-10 text-lg font-semibold text-slate-800">Statistik</h2>
+        {% if stats is not empty %}
+            <div class="mt-4 overflow-x-auto rounded-xl border border-slate-200 bg-white">
+                <table class="min-w-full text-left text-sm">
+                    <thead class="border-b bg-slate-50 text-xs uppercase text-slate-500">
+                        <tr>
+                            <th class="px-4 py-3">Nutzer</th>
+                            <th class="px-4 py-3">Gesamt</th>
+                            <th class="px-4 py-3">Artikel</th>
+                            <th class="px-4 py-3">Standort</th>
+                            <th class="px-4 py-3">Global</th>
+                            <th class="px-4 py-3">Letzter Versuch</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y text-slate-700">
+                        {% for row in stats %}
+                            <tr>
+                                <td class="px-4 py-3">{{ row.user|e }}</td>
+                                <td class="px-4 py-3">{{ row.total|e }}</td>
+                                <td class="px-4 py-3">{{ row.item|e }}</td>
+                                <td class="px-4 py-3">{{ row.location|e }}</td>
+                                <td class="px-4 py-3">{{ row.global|e }}</td>
+                                <td class="px-4 py-3">{{ row.last_attempt|e }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="mt-3 text-sm text-slate-600">Es sind noch keine statistischen Daten vorhanden.</p>
+        {% endif %}
+    </div>
+</div>

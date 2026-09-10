@@ -1,0 +1,56 @@
+<div class="cb-qr-check cb-qr-check--public">
+    <header class="cb-qr-hero {{ status_class|e('html_attr') }}">
+        <div class="cb-qr-hero__icon" aria-hidden="true">
+            {% if status_class == 'cb-qr-status--valid' %}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"></path></svg>
+            {% else %}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 7 10 10M17 7 7 17"></path></svg>
+            {% endif %}
+        </div>
+        <div class="cb-qr-hero__content">
+            <p class="cb-qr-eyebrow">{{ eyebrow|e }}</p>
+            <div class="cb-qr-hero__title-row">
+                <h2>{{ status_label|e }}</h2>
+                <span class="cb-qr-status-badge">{{ badge_label|e }}</span>
+            </div>
+            <p class="cb-qr-description">{{ description|e }}</p>
+            <div class="cb-qr-timing {{ timing_class|e('html_attr') }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v5l3 2m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg>
+                <p>
+                    <strong>{{ timing_label|e }}</strong>
+                    <span>{{ timing_detail|e }}</span>
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <section class="cb-qr-section" aria-labelledby="cb-qr-public-booking-title">
+        <div class="cb-qr-section__heading">
+            <span class="cb-qr-section__marker" aria-hidden="true"></span>
+            <h3 id="cb-qr-public-booking-title">{{ labels.booking_info|e }}</h3>
+        </div>
+
+        <dl class="cb-qr-data-list">
+            <div class="cb-qr-data-row">
+                <svg class="cb-qr-data-row__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>
+                <dt>{{ labels.item|e }}</dt>
+                <dd>{{ item|e }}</dd>
+            </div>
+            <div class="cb-qr-data-row">
+                <svg class="cb-qr-data-row__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+                <dt>{{ labels.location|e }}</dt>
+                <dd>{{ location|e }}</dd>
+            </div>
+            <div class="cb-qr-data-row">
+                <svg class="cb-qr-data-row__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>
+                <dt>{{ labels.from|e }}</dt>
+                <dd>{{ start_date|e }}</dd>
+            </div>
+            <div class="cb-qr-data-row">
+                <svg class="cb-qr-data-row__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                <dt>{{ labels.to|e }}</dt>
+                <dd>{{ end_date|e }}</dd>
+            </div>
+        </dl>
+    </section>
+</div>

@@ -1,0 +1,35 @@
+<div class="wrap afcb-admin-tailwind">
+    <div class="max-w-4xl">
+        <h1 class="text-2xl font-semibold text-slate-800">{{ title|e }}</h1>
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <form method="post" action="{{ action_url|e('html_attr') }}" class="space-y-6">
+                {{ settings_fields|raw }}
+
+                <div>
+                    <h2 class="text-lg font-semibold text-slate-800">QR-Code Versand</h2>
+                    <p class="mt-2 text-sm text-slate-600">Wenn aktiviert, wird der QR-Code in Bestätigungs-E-Mails eingefügt und eine Prüfen-Seite erstellt.</p>
+                    {% set control %}
+                        {% include 'components/checkbox.html.twig' with {
+                            name: 'commonbookings_additional_features_option_qrcode[qrcode_enabled]',
+                            id: 'afcb_qrcode_enabled',
+                            checked: enabled
+                        } %}
+                    {% endset %}
+                    <div class="mt-4">
+                        {% include 'components/field.html.twig' with {
+                            label: 'QR-Code Versand aktivieren',
+                            id: 'afcb_qrcode_enabled',
+                            control: control,
+                            control_class: 'flex items-center'
+                        } %}
+                    </div>
+                </div>
+
+                {% include 'components/button.html.twig' with {
+                    type: 'submit',
+                    label: 'Speichern'
+                } %}
+            </form>
+        </div>
+    </div>
+</div>

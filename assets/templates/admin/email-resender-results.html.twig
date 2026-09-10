@@ -1,0 +1,91 @@
+{% set message_styles = {
+    success: 'text-emerald-700',
+    error: 'text-rose-700',
+    warning: 'text-amber-700'
+} %}
+
+{% if result.empty %}
+    {% include 'components/notice.html.twig' with {
+        type: 'warning',
+        message: 'Keine Buchungen gefunden.',
+        strong: true
+    } only %}
+{% else %}
+    {% if result.warnings %}
+        <div class="space-y-2">
+            {% for warning in result.warnings %}
+                {% include 'components/notice.html.twig' with {
+                    type: 'warning',
+                    message: warning
+                } only %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% set summary_content %}
+        <div class="text-sm text-slate-700">
+            <div class="font-semibold">{{ 'Gefundene Buchungen: %d'|format(result.summary.total) }}</div>
+            {% if result.summary.preview %}
+                <p class="mt-2 font-semibold text-amber-700">VORSCHAU-MODUS: Keine E-Mails werden versendet!</p>
+            {% endif %}
+        </div>
+    {% endset %}
+    {% include 'components/card.html.twig' with {
+        title: 'Zusammenfassung',
+        class: 'mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4',
+        content: summary_content
+    } only %}
+
+    <div class="mt-4 rounded-lg border border-slate-200 bg-white p-4">
+        <h4 class="text-sm font-semibold text-slate-700">Verarbeitete Buchungen:</h4>
+        <ul class="mt-2 space-y-3 text-sm text-slate-700">
+            {% for booking in result.bookings %}
+                <li class="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                    <strong>{{ 'Buchung #%d'|format(booking.id) }}</strong><br>
+                    {% if booking.user %}
+                        {{ 'Benutzer: %s (%s)'|format(booking.user|e, booking.email|e) }}<br>
+                        {{ 'Gegenstand: %s'|format(booking.item|e) }}<br>
+                        {{ 'Standort: %s'|format(booking.location|e) }}<br>
+                        {{ 'Zeitraum: %s bis %s'|format(booking.start_date|e, booking.end_date|e) }}<br>
+                        {{ 'Status: %s'|format(booking.status|e) }}<br>
+                    {% endif %}
+
+                    {% if booking.messages %}
+                        <div class="mt-2 space-y-1">
+                            {% for message in booking.messages %}
+                                <div class="font-semibold {{ message_styles[message.type]|default('text-slate-700') }}">
+                                    {{ message.text|e }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% set final_content %}
+        {% if not result.summary.preview %}
+            <p class="mt-2 text-sm text-slate-700"><strong>{{ 'Erfolgreich versendet: %d E-Mails'|format(result.summary.success_count) }}</strong></p>
+            <p class="text-sm text-slate-700"><strong>{{ 'Fehler: %d'|format(result.summary.error_count) }}</strong></p>
+        {% else %}
+            <p class="mt-2 text-sm text-slate-700"><strong>{{ 'Buchungen in Vorschau: %d'|format(result.summary.total) }}</strong></p>
+        {% endif %}
+
+        {% if result.errors %}
+            <h5 class="mt-3 text-sm font-semibold text-slate-700">Fehlerdetails:</h5>
+            <ul class="mt-2 space-y-1 text-sm">
+                {% for error in result.errors %}
+                    <li class="text-rose-700">{{ error|e }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <p class="mt-3 text-sm font-semibold text-emerald-700"><strong>{{ 'Verarbeitung abgeschlossen um: %s'|format(result.completed_at) }}</strong></p>
+    {% endset %}
+    {% include 'components/card.html.twig' with {
+        title: 'Zusammenfassung',
+        class: 'mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4',
+        content: final_content
+    } only %}
+{% endif %}

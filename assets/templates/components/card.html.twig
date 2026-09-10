@@ -1,0 +1,14 @@
+{% set class = class|default('rounded-xl border border-slate-200 bg-white p-6 shadow-sm') %}
+<div class="{{ class|e('html_attr') }}">
+    {% if title %}
+        <h2 class="text-lg font-semibold text-slate-800">{{ title|e }}</h2>
+    {% endif %}
+    {% if subtitle %}
+        <p class="mt-2 text-sm text-slate-600">{{ subtitle|e }}</p>
+    {% endif %}
+    {% if content is defined %}
+        <div class="mt-4">
+            {{ content|raw }}
+        </div>
+    {% endif %}
+</div>
