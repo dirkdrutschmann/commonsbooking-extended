@@ -1,8 +1,9 @@
 # commonsbooking-extended
 
-The repository name is `commonsbooking-extended`; the WordPress plugin slug
-and update slug remain `cb-additional-features` so existing installations and
-the private update server continue to recognize the plugin.
+The repository name, WordPress plugin slug and update slug are
+`commonsbooking-extended`. Existing installations are migrated by changing the
+active plugin path from the former `cb-additional-features` directory to the
+new directory before the old directory is removed.
 
 Dieses WordPress-Plugin erweitert das **CommonsBooking**-Plugin um zusätzliche Funktionen für Verwaltung, Kommunikation und Darstellung.
 
@@ -47,9 +48,9 @@ Abhängigkeiten. Auf WordPress-Servern werden weder Composer noch Node.js
 ausgeführt.
 
 GitHub Actions builds and publishes the plugin package on release tags matching
-`v*`. The package is written as `dist/cb-additional-features.zip` with
-`cb-additional-features` as its ZIP root. The update metadata is served by
-`https://updates.drutschmann.dev/?action=get_metadata&slug=cb-additional-features`.
+`v*`. The package is written as `dist/commonsbooking-extended.zip` with
+`commonsbooking-extended` as its ZIP root. The update metadata is served by
+`https://updates.drutschmann.dev/?action=get_metadata&slug=commonsbooking-extended`.
 
 Local checks are:
 

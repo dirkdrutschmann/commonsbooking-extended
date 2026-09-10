@@ -552,7 +552,7 @@ class UserManagementAdmin
 
         wp_enqueue_editor();
 
-        $base_url = plugin_dir_url(dirname(__DIR__, 2) . '/cb-additional-features.php');
+        $base_url = plugin_dir_url(dirname(__DIR__, 2) . '/commonsbooking-extended.php');
 
         wp_enqueue_script(
             'afcb-user-management-admin',

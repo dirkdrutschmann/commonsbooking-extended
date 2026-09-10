@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: Commons Booking Additional Feature
+Plugin Name: CommonsBooking Extended
 Description: Dieses Plugin erweitert Common Bookings um zusätzliche Verwaltungsfunktionen, Buchungshistorie und Sidebar-Funktionen.
 Author: Dirk Drutschmann
-Version: 0.7.11
+Version: 0.7.12
 */
 
 namespace DirkDrutschmann\CommonbookingsAdditionalFeatures;
@@ -19,7 +19,7 @@ register_activation_hook(__FILE__, [Plugin::class, 'activate']);
 $loader = new Plugin();
 
 $myUpdateChecker = PucFactory::buildUpdateChecker(
-    'https://updates.drutschmann.dev/?action=get_metadata&slug=cb-additional-features',
+    'https://updates.drutschmann.dev/?action=get_metadata&slug=commonsbooking-extended',
     __FILE__, //Full path to the main plugin file or functions.php.
-    'cb-additional-features'
+    'commonsbooking-extended'
 );

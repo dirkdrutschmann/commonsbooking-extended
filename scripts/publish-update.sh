@@ -3,7 +3,7 @@ set -euo pipefail
 umask 077
 
 PACKAGE_FILE="${1:-}"
-SLUG='cb-additional-features'
+SLUG='commonsbooking-extended'
 
 [[ -n "$PACKAGE_FILE" && -f "$PACKAGE_FILE" ]] || { echo 'Package file is required.' >&2; exit 1; }
 : "${UPDATE_SERVER_HOST:?UPDATE_SERVER_HOST is required}"
@@ -48,8 +48,8 @@ package_dir="$1"
 slug="$2"
 incoming="$3"
 expected="$4"
-case "$slug" in cb-additional-features) ;; *) exit 50 ;; esac
-case "$incoming" in .cb-additional-features.*.incoming.zip) ;; *) exit 51 ;; esac
+case "$slug" in commonsbooking-extended) ;; *) exit 50 ;; esac
+case "$incoming" in .commonsbooking-extended.*.incoming.zip) ;; *) exit 51 ;; esac
 incoming_path="$package_dir/$incoming"
 final_path="$package_dir/$slug.zip"
 temporary_path="$package_dir/.$slug.install.$$"

@@ -11,7 +11,7 @@ class PluginPaths
 
     public static function base_url(): string
     {
-        return plugin_dir_url(self::base_path() . '/cb-additional-features.php');
+        return plugin_dir_url(self::base_path() . '/commonsbooking-extended.php');
     }
 
     public static function asset_path(string $relative): string

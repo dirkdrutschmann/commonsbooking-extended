@@ -74,7 +74,7 @@ class QrCodeSender
             : '1.0.0';
         $cssUrl = plugins_url(
             'assets/css/commonsbooking-qr-check.css',
-            dirname(__DIR__, 2) . '/cb-additional-features.php'
+            dirname(__DIR__, 2) . '/commonsbooking-extended.php'
         );
         $siteScheme = wp_parse_url(home_url('/'), PHP_URL_SCHEME);
 

@@ -6,7 +6,7 @@ cd "$ROOT_DIR"
 
 npm run audit:production
 
-php -l cb-additional-features.php >/dev/null
+php -l commonsbooking-extended.php >/dev/null
 php -l uninstall.php >/dev/null
 while IFS= read -r -d '' file; do
     php -l "$file" >/dev/null

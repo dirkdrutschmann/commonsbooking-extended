@@ -42,8 +42,8 @@ jobs:
       - name: Upload release package
         uses: actions/upload-artifact@v4
         with:
-          name: cb-additional-features-${{ github.sha }}
-          path: dist/cb-additional-features.zip
+          name: commonsbooking-extended-${{ github.sha }}
+          path: dist/commonsbooking-extended.zip
           if-no-files-found: error
           retention-days: 14
 
@@ -68,7 +68,7 @@ jobs:
       - name: Download release package
         uses: actions/download-artifact@v4
         with:
-          name: cb-additional-features-${{ github.sha }}
+          name: commonsbooking-extended-${{ github.sha }}
           path: dist
 
       - name: Configure update-server SSH
@@ -88,4 +88,4 @@ jobs:
           UPDATE_SERVER_PACKAGE_DIR: ${{ secrets.UPDATE_SERVER_PACKAGE_DIR }}
           UPDATE_SERVER_SSH_KEY_FILE: ${{ runner.temp }}/lastenrad-ssh/id_ed25519
           UPDATE_SERVER_KNOWN_HOSTS_FILE: ${{ runner.temp }}/lastenrad-ssh/known_hosts
-        run: scripts/publish-update.sh dist/cb-additional-features.zip
+        run: scripts/publish-update.sh dist/commonsbooking-extended.zip

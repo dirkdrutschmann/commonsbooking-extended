@@ -998,7 +998,7 @@ class UserManagement
         $this->frontend_assets_enqueued = true;
 
         $base_path = dirname(__DIR__, 2) . '/';
-        $base_url = plugin_dir_url($base_path . 'cb-additional-features.php');
+        $base_url = plugin_dir_url($base_path . 'commonsbooking-extended.php');
         $css_path = $base_path . 'assets/css/user-management.css';
         $css_version = file_exists($css_path) ? (string) filemtime($css_path) : '0.1';
         $js_path = $base_path . 'assets/js/afcb-user-management.js';

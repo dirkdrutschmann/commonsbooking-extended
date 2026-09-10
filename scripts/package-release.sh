@@ -15,7 +15,7 @@ command -v zip >/dev/null || { echo 'zip is required.' >&2; exit 1; }
 cd "$ROOT_DIR"
 npm run audit:production
 
-version="$(sed -nE 's/^Version:[[:space:]]*([^[:space:]]+).*/\1/p' cb-additional-features.php | head -n 1)"
+version="$(sed -nE 's/^Version:[[:space:]]*([^[:space:]]+).*/\1/p' commonsbooking-extended.php | head -n 1)"
 [[ "$version" =~ ^[A-Za-z0-9._-]+$ ]] || { echo 'Invalid plugin version.' >&2; exit 1; }
 
 mkdir -p "$OUTPUT_DIR"
@@ -23,7 +23,7 @@ find "$OUTPUT_DIR" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
 build_root="$(mktemp -d)"
 trap 'rm -rf "$build_root"' EXIT
 stage_parent="$build_root/package"
-stage="$stage_parent/cb-additional-features"
+stage="$stage_parent/commonsbooking-extended"
 mkdir -p "$stage_parent"
 
 rsync -a \
@@ -45,10 +45,10 @@ find "$stage" -type d -exec chmod 0755 {} +
 find "$stage" -type f -exec chmod 0644 {} +
 find "$stage" -exec touch -t 198001010000 {} +
 
-archive="$OUTPUT_DIR/cb-additional-features.zip"
+archive="$OUTPUT_DIR/commonsbooking-extended.zip"
 (
     cd "$stage_parent"
-    find cb-additional-features -print | LC_ALL=C sort | zip -X -q "$archive" -@
+    find commonsbooking-extended -print | LC_ALL=C sort | zip -X -q "$archive" -@
 )
 
 unzip -tq "$archive" >/dev/null
