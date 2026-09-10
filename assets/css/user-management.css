@@ -406,6 +406,14 @@
     color: #17363a !important;
 }
 
+.afcb-login-resend {
+    border-color: var(--afcb-border);
+}
+
+.afcb-login-resend-submit {
+    min-height: 3rem;
+}
+
 .afcb-user-form button.afcb-button--danger[type='submit'] {
     border-color: #be123c !important;
     background: #be123c !important;

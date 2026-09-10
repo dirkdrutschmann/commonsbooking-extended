@@ -26,7 +26,8 @@ Dieses WordPress-Plugin erweitert das **CommonsBooking**-Plugin um zusätzliche 
   - `[afcb_bookings]`: Aktuelle Buchungen des eingeloggten Nutzers.
   - `[afcb_qr_check]`: Check-Seite für QR-Code-Buchungsprüfung (wird bei Bedarf automatisch angelegt).
   - `[afcb_register]`: Registrierungsformular inkl. Adresse, Datenschutz/Nutzungsbedingungen und reCAPTCHA.
-  - `[afcb_login]`: Login-Formular inkl. reCAPTCHA.
+  - `[afcb_login]`: Login-Formular inkl. reCAPTCHA und neutralem Versand einer
+  erneuten E-Mail-Bestätigung nach Prüfung der Zugangsdaten.
   - `[afcb_profile]`: Profil-Seite mit Pflichtfeldern, E-Mail- und Telefon-Verifikation.
   - `[afcb_forgot_password]`: Passwort-zurücksetzen Formular (E-Mail).
   - `[afcb_forgot_username]`: Benutzername per SMS zusenden.
@@ -121,6 +122,11 @@ Passwort eine neue Bestätigungs-E-Mail auslösen. Dabei wird kein Auth-Cookie
 gesetzt; ein Cooldown verhindert wiederholten Versand. Eine bestätigte E-Mail
 aktiviert nur Konten ohne zusätzliche manuelle Prüfmarkierung. Abgelehnte oder
 weiterhin zu prüfende Konten erhalten keine Sitzung.
+
+Der öffentliche Button zum erneuten Versand verwendet dieselben Zugangsdaten,
+antwortet für unbekannte, falsche, bereits bestätigte und gültige Konten
+identisch und ist zusätzlich pro IP-Adresse sowie Eingabe gedrosselt. Dadurch
+wird die Existenz eines Benutzernamens nicht über die Antwort verraten.
 
 Der eigenständige Regressionstest benötigt keine Dev-Abhängigkeiten:
 

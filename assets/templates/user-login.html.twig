@@ -116,6 +116,19 @@
                 label: 'Anmelden',
                 class: 'afcb-button afcb-button--primary afcb-login-submit'
             } only %}
+
+            <div class="afcb-login-resend mt-5 border-t border-slate-200 pt-5">
+                <p class="mb-3 text-sm font-semibold text-slate-700">Keine Bestätigungs-E-Mail erhalten?</p>
+                {% include 'components/button.html.twig' with {
+                    type: 'submit',
+                    name: 'afcb_login_action',
+                    value: 'resend_verification',
+                    label: 'Bestätigungs-E-Mail erneut senden',
+                    attrs: 'formnovalidate',
+                    class: 'afcb-button afcb-button--secondary afcb-login-resend-submit w-full'
+                } only %}
+                <p class="mt-2 text-xs text-slate-500">Verwende dafür dieselben Zugangsdaten wie bei der Anmeldung.</p>
+            </div>
         </form>
 
         {% if forgot_username_url or register_url %}

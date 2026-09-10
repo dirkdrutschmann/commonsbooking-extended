@@ -77,6 +77,10 @@ class UserManagement
     private const MESSAGE_DELIVERY_STATUS_UNCERTAIN = 'uncertain';
     private const MESSAGE_DELIVERY_UNCERTAIN_NOTICE = 'Der Versand konnte nicht bestätigt werden. Falls du einen Code erhältst, kannst du ihn trotzdem verwenden. Bitte warte eine Minute, bevor du erneut sendest.';
     private const EMAIL_RESEND_COOLDOWN = 60;
+    private const PUBLIC_EMAIL_RESEND_IDENTIFIER_COOLDOWN = 60;
+    private const PUBLIC_EMAIL_RESEND_IP_WINDOW = 900;
+    private const PUBLIC_EMAIL_RESEND_IP_MAX_ATTEMPTS = 5;
+    private const PUBLIC_EMAIL_RESEND_NOTICE = 'Wenn deine Angaben zu einem noch nicht bestätigten Konto passen, wurde eine neue Bestätigungs-E-Mail angefordert. Bitte prüfe dein Postfach (auch den Spam-Ordner).';
     private const DELETE_PROFILE_TOKEN_EXPIRY_SECONDS = 7200;
     private const DELETE_PROFILE_RESEND_COOLDOWN = 300;
     private const FORGOT_USERNAME_PHONE_RATE_LIMIT_SECONDS = 900;
@@ -1405,8 +1409,14 @@ class UserManagement
             $this->redirect_with_notice(wp_get_referer(), 'error', 'reCAPTCHA Prüfung fehlgeschlagen.');
         }
 
-        $login = sanitize_user(wp_unslash($_POST['user_login'] ?? ''), true);
+        $submitted_login = trim((string) wp_unslash($_POST['user_login'] ?? ''));
         $password = (string) wp_unslash($_POST['user_pass'] ?? '');
+
+        if (sanitize_key((string) wp_unslash($_POST['afcb_login_action'] ?? '')) === 'resend_verification') {
+            $this->handle_public_resend_email_verification($submitted_login, $password);
+        }
+
+        $login = sanitize_user($submitted_login, true);
 
         $user_by_login = get_user_by('login', $login);
         if (!$user_by_login && is_email($login)) {
@@ -1458,6 +1468,44 @@ class UserManagement
 
         wp_safe_redirect($redirect);
         exit;
+    }
+
+    /**
+     * Handles the unauthenticated resend action without disclosing whether an
+     * identifier belongs to a user. Correct credentials are still required,
+     * but every valid request gets the same response and no auth cookie.
+     */
+    private function handle_public_resend_email_verification(string $identifier, string $password): void
+    {
+        $identifier = trim(sanitize_text_field($identifier));
+        if ($this->is_public_email_resend_rate_limited($identifier)) {
+            $this->redirect_with_notice(wp_get_referer(), 'info', self::PUBLIC_EMAIL_RESEND_NOTICE);
+        }
+
+        $this->record_public_email_resend_attempt($identifier);
+        if ($identifier === '' || $password === '') {
+            $this->redirect_with_notice(wp_get_referer(), 'info', self::PUBLIC_EMAIL_RESEND_NOTICE);
+        }
+
+        if (is_email($identifier)) {
+            $email = sanitize_email($identifier);
+            $user = get_user_by('email', $email);
+            $canonical_login = $user instanceof \WP_User ? $user->user_login : $email;
+        } else {
+            $login = sanitize_user($identifier, true);
+            $user = get_user_by('login', $login);
+            $canonical_login = $user instanceof \WP_User ? $user->user_login : $login;
+        }
+
+        PendingEmailVerificationLogin::attempt(
+            $canonical_login,
+            $password,
+            time(),
+            self::EMAIL_RESEND_COOLDOWN,
+            [self::class, 'send_email_verification']
+        );
+
+        $this->redirect_with_notice(wp_get_referer(), 'info', self::PUBLIC_EMAIL_RESEND_NOTICE);
     }
 
     public function handle_profile_update(): void
@@ -2756,6 +2804,39 @@ class UserManagement
     {
         $attempts = (int) get_transient($this->get_forgot_username_ip_rate_limit_key());
         return $attempts >= self::FORGOT_USERNAME_IP_RATE_LIMIT_MAX_ATTEMPTS;
+    }
+
+    private function is_public_email_resend_rate_limited(string $identifier): bool
+    {
+        $ip_attempts = (int) get_transient($this->get_public_email_resend_ip_rate_limit_key());
+        if ($ip_attempts >= self::PUBLIC_EMAIL_RESEND_IP_MAX_ATTEMPTS) {
+            return true;
+        }
+
+        return (bool) get_transient($this->get_public_email_resend_identifier_rate_limit_key($identifier));
+    }
+
+    private function record_public_email_resend_attempt(string $identifier): void
+    {
+        $ip_key = $this->get_public_email_resend_ip_rate_limit_key();
+        $attempts = (int) get_transient($ip_key);
+        set_transient($ip_key, $attempts + 1, self::PUBLIC_EMAIL_RESEND_IP_WINDOW);
+        set_transient(
+            $this->get_public_email_resend_identifier_rate_limit_key($identifier),
+            '1',
+            self::PUBLIC_EMAIL_RESEND_IDENTIFIER_COOLDOWN
+        );
+    }
+
+    private function get_public_email_resend_ip_rate_limit_key(): string
+    {
+        return 'afcb_verification_ip_' . hash('sha256', $this->get_rate_limit_client_ip());
+    }
+
+    private function get_public_email_resend_identifier_rate_limit_key(string $identifier): string
+    {
+        $secret = function_exists('wp_salt') ? wp_salt('auth') : __CLASS__;
+        return 'afcb_verification_identifier_' . hash_hmac('sha256', strtolower(trim($identifier)), $secret);
     }
 
     private function record_forgot_username_ip_attempt(): void
