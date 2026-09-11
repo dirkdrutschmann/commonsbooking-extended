@@ -27,6 +27,7 @@ class Plugin
     public function __construct()
     {
         EnvironmentSafety::register();
+        add_action('wp_enqueue_scripts', [$this, 'enqueueCommonsBookingMapStyles'], 5);
         add_action('wp_enqueue_scripts', [$this, 'scripts']);
         add_action('admin_enqueue_scripts', [$this, 'admin_scripts']);
         add_action( 'plugins_loaded', [$this,'my_plugin_init'] );     
@@ -89,6 +90,23 @@ class Plugin
             '5.1.3'
         );
       
+    }
+
+    /**
+     * Queue CommonsBooking's Leaflet stylesheet before frontend templates render.
+     *
+     * Older CommonsBooking releases enqueue this stylesheet from the map view,
+     * which is too late for wp_head. The compatibility hook keeps map tiles
+     * positioned correctly while remaining a no-op when the core handle is not
+     * registered.
+     */
+    public function enqueueCommonsBookingMapStyles(): void
+    {
+        if (is_admin() || !wp_style_is('cb-leaflet', 'registered')) {
+            return;
+        }
+
+        wp_enqueue_style('cb-leaflet');
     }
 
     public function admin_scripts($hook = '')
